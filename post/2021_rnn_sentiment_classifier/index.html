@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Richie Lee">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="/img/2021_Sentiment_IMDb/Cinema.jpg">
+    <meta property="twitter:image" content="/img/2021_Sentiment_IMDb/Cinema.jpg" />
+    
+
+    
+    <meta name="title" content="Sentiment Classification: Movie Reviews" />
+    <meta property="og:title" content="Sentiment Classification: Movie Reviews" />
+    <meta property="twitter:title" content="Sentiment Classification: Movie Reviews" />
+    
+
+    
+    <meta name="description" content="This study seeks to distinguish between positive and negative movie reviews using Recurrent Neural Networks (RNNs). In particular, the goal is to leverage their ability to capture complex relations and sequential dependencies in text data. ">
+    <meta property="og:description" content="This study seeks to distinguish between positive and negative movie reviews using Recurrent Neural Networks (RNNs). In particular, the goal is to leverage their ability to capture complex relations and sequential dependencies in text data. " />
+    <meta property="twitter:description" content="This study seeks to distinguish between positive and negative movie reviews using Recurrent Neural Networks (RNNs). In particular, the goal is to leverage their ability to capture complex relations and sequential dependencies in text data. " />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="Microservice, Deep Learning">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Sentiment Classification: Movie Reviews | Personal Webpage</title>
+
+    <link rel="canonical" href="/post/2021_rnn_sentiment_classifier/">
+
+    
+    
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link rel="stylesheet" href="/css/font-awesome.all.min.css">
+
+    
+    
+
+    
+    <script src="/js/jquery.min.js"></script>
+
+    
+    <script src="/js/bootstrap.min.js"></script>
+
+    
+    <script src="/js/hux-blog.min.js"></script>
+
+    
+    <script src="/js/lazysizes.min.js"></script>
+
+    
+    
+
+</head>
+
+
+
+
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Richie Lee</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">All Posts</a>
+                    </li>
+                    
+                        
+                        <li>
+                            <a href="/categories/projects/">projects</a>
+                        </li>
+                        
+                    
+                    
+		    
+                        <li><a href="/about//">ABOUT</a></li>
+                    
+		            <li>
+                        <a href="/search"><i class="fa fa-search"></i></a>
+		           </li>
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('/img/2021_Sentiment_IMDb/Cinema.jpg')
+    }
+</style>
+
+<header class="intro-header" >
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/data-science" title="Data Science">
+                            Data Science
+                        </a>
+                        
+                        <a class="tag" href="/tags/deep-learning" title="Deep Learning">
+                            Deep Learning
+                        </a>
+                        
+                        <a class="tag" href="/tags/machine-learning" title="Machine Learning">
+                            Machine Learning
+                        </a>
+                        
+                        <a class="tag" href="/tags/text-analysis" title="Text analysis">
+                            Text analysis
+                        </a>
+                        
+                        <a class="tag" href="/tags/nlp" title="NLP">
+                            NLP
+                        </a>
+                        
+                        <a class="tag" href="/tags/pytorch" title="PyTorch">
+                            PyTorch
+                        </a>
+                        
+                        <a class="tag" href="/tags/classification" title="Classification">
+                            Classification
+                        </a>
+                        
+                    </div>
+                    <h1>Sentiment Classification: Movie Reviews</h1>
+                    <h2 class="subheading">Deep Learning applied to a practical text analysis problem</h2>
+                    <span class="meta">
+                        
+                            Posted by 
+                            
+                                Richie
+                             
+                            on 
+                            Sunday, April 25, 2021
+                            
+                            
+                            
+                            
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <h2 id="context">Context</h2>
+<p><em>The objective is to accurately identify whether a movie was positively or negatively received through text reviews from IMDb. This is a process that is often referred to as Sentiment Classification. Though seemingly trivial, there were multiple aspects that made this problem more challenging:</em></p>
+<ul>
+<li><em>Input data size is not consistent (different review lengths)</em></li>
+<li><em>Small differences are often relevant, ruling out standard similarity methods</em></li>
+<li><em>There are a lot of distinct dependencies across words</em></li>
+<li><em>Time constraints: 1 week for coding &amp; reporting</em></li>
+</ul>
+<h2 id="data">Data</h2>
+<p>Amazons <a href="https://www.imdb.com/">IMDb</a> (Internet Movie Database) is known as the world&rsquo;s most popular source for movie reviews. However, it is also a commonly-used sequence-learning database as it is a large, challenging classification dataset with plenty of examples.</p>
+<p>The utilized dataset consists of 50,000 preprocessed and <a href="https://www.analyticsvidhya.com/blog/2020/05/what-is-tokenization-nlp/">tokenised</a> reviews. To improve training time by reducing required padding and computations, variable batch sizes are implemented. This ensures that (approximately) equal-sized batches are constructed in terms of tokens, while allowing the number of sequences per batch to differ.</p>
+<p>During model development and tuning, a validation split of 20,000 training instances and 5,000 validation instances is used. For the final test, a canonical test/train split of 25,000 instances each is applied. This design should prevent data leakage i.e. loss of robustness and misleadingly strong results due to accidentally fitting on test data.</p>
+<h2 id="models">Models</h2>
+<p>This report will explore RNN&rsquo;s (Recurrent Neural Networks). These deep learning models are characterized by their ability to &ldquo;remember&rdquo; previous inputs, allowing temporal dynamic behavior. This is beneficial in environments such as this classification where strong within-input dependencies are expected. In addition, RNN&rsquo;s also provide better compatibility with arbitrary-length sequences. In our experimentation, we compare 2 RNN variations, alongside an MLP. Furthermore, we apply an <a href="https://www.baeldung.com/cs/neural-nets-embedding-layers#:~:text=An%20embedding%20layer%20is%20a,process%20the%20data%20more%20efficiently.">Embedding layer</a> and <a href="https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/">ADAM</a> optimizer for all variations.</p>
+<ol>
+<li>
+<p><strong>MLP (Multilayer Perceptron):</strong> Often referred to as &ldquo;vanilla&rdquo; neural networks, these basic feed-forward models can be considered the bread and butter of deep learning. Our model will contain a single hidden layer.</p>
+</li>
+<li>
+<p><strong>Elman:</strong> This model applies an Elman layer. In addition to regular hidden layer properties, it also contains context units which hold information of previous iterations. Moreover, we also implemented a residual connection to counter exploding and <a href="https://towardsdatascience.com/the-vanishing-gradient-problem-69bf08b15484">vanishing gradients</a>.</p>
+</li>
+<li>
+<p><strong>LSTM (Long Short-Term Memory):</strong> This model is an RNN variation. In short, LSTM&rsquo;s main benefit is the &ldquo;conveyor belt&rdquo; consisting of only linear operations, avoiding gradient problems in the process. In addition, we also feed selected memory of the past to this belt through various &ldquo;gates&rdquo;.</p>
+</li>
+</ol>
+<h2 id="results">Results</h2>
+<p>Performance after the First Epoch</p>
+<p>The following table presents the performance metrics of the three models after the first epoch, including average loss and accuracy for both training and test sets:</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Training Loss</th>
+<th>Training Accuracy</th>
+<th>Test Loss</th>
+<th>Test Accuracy</th>
+<th>Runtime</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MLP (lr=0.001)</td>
+<td>0.4257</td>
+<td>0.8250</td>
+<td><strong>0.4015</strong></td>
+<td><strong>0.8455</strong></td>
+<td><strong>0:34</strong></td>
+</tr>
+<tr>
+<td>Elman (lr=0.001)</td>
+<td>0.4050</td>
+<td>0.7970</td>
+<td>0.4056</td>
+<td>0.8276</td>
+<td>0:46</td>
+</tr>
+<tr>
+<td>LSTM (lr=0.001)</td>
+<td><strong>0.3102</strong></td>
+<td><strong>0.8687</strong></td>
+<td>0.5182</td>
+<td>0.7533</td>
+<td>1:16</td>
+</tr>
+</tbody>
+</table>
+<p>Generally, the LSTM model was expected to perform the best, followed by the Elman and MLP models. However, the observed results differed from the initial expectations. The MLP model exhibited the highest out-of-sample performance, followed by the Elman and LSTM respectively. Why&rsquo;s that? It could be the result of one of the following:</p>
+<ul>
+<li>Due to time constraints, we limited training to a single epoch. Given the plots, it is reasonable to assume we have already largely converged, but this detail should not be ignored.</li>
+<li>Differences in Hyperparameter selection (particularly the <em>learning rate</em>) have strong effects on performance. For the LSTM, it even resulted in different model preferences amongst the training and validation set showing weak external validity and robustness of the (single-epoch) LSTM for the given hyperparameters.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Training</th>
+<th></th>
+<th></th>
+<th>Validation</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Learning Rate</td>
+<td>0.0001</td>
+<td>0.001</td>
+<td>0.01</td>
+<td>0.0001</td>
+<td>0.001</td>
+<td>0.01</td>
+</tr>
+<tr>
+<td>MLP</td>
+<td>0.7571</td>
+<td><strong>0.8261</strong></td>
+<td>0.7691</td>
+<td>0.7728</td>
+<td><strong>0.8080</strong></td>
+<td>0.8068</td>
+</tr>
+<tr>
+<td>Elman</td>
+<td>0.5728</td>
+<td><strong>0.7721</strong></td>
+<td>0.4889</td>
+<td>0.5948</td>
+<td><strong>0.8113</strong></td>
+<td>0.4952</td>
+</tr>
+<tr>
+<td>LSTM</td>
+<td>0.6980</td>
+<td><strong>0.8113</strong></td>
+<td>0.8072</td>
+<td>0.7358</td>
+<td>0.8028</td>
+<td><strong>0.8238</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Different type of hidden layers also displayed substantial performance differences (Sigmoid, Tanh), making it an additional potential driver of performance.</li>
+</ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>This report aimed to address the task of sentiment classification on the IMDb dataset using different variations of RNN models. The MLP, Elman, and LSTM models were employed and evaluated in terms of performance metrics such as loss and accuracy.</p>
+<p>The results of the project deviated from initial expectations, with the MLP model outperforming the other variations. This unexpected outcome suggests the need for further hyperparameter tuning and investigation. In conclusion, while the performance showed decent results with simplified models achieving accuracies exceeding 75% accuracy, there is still room for improvement. Future work should focus on optimizing hyperparameters (something in which this study was limited due to time constraints), exploring different variations of RNNs, and investigating additional factors that may affect model performance.</p>
+
+
+                
+
+                
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/_readme/" data-toggle="tooltip" data-placement="top" title="Clean White Theme for Hugo">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/post/2021_factor_ml_forecasting/" data-toggle="tooltip" data-placement="top" title="PCA Machine Learning Hybrid Models: Real Estate Forecasting">Next
+                            Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+                
+
+                
+
+
+
+            </div>
+
+            
+            
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+            
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/classification" title="classification">
+                            classification
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/clustering" title="clustering">
+                            clustering
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/data-science" title="data-science">
+                            data-science
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/dimension-reduction" title="dimension-reduction">
+                            dimension-reduction
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/econometrics" title="econometrics">
+                            econometrics
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/forecasting" title="forecasting">
+                            forecasting
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/industry" title="industry">
+                            industry
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/machine-learning" title="machine-learning">
+                            machine-learning
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/text-analysis" title="text-analysis">
+                            text-analysis
+                        </a>
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">                  
+                    
+                    <li>
+                        <a href="mailto:richie.lee@live.nl">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		           
+                    
+                    
+                    
+                    
+
+		            
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/Richie-Lee">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		            
+                    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/leerichie/">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		           
+                    
+                    
+                    
+                    
+                    
+                    
+            
+            
+            <li>
+                <a target="_blank" href="https://www.instagram.com/richie_lee_/">
+                    <span class="fa-stack fa-lg">
+                        <i class="fas fa-circle fa-stack-2x"></i>
+                        <i class="fab fa-instagram fa-stack-1x fa-inverse"></i>
+                    </span>
+                </a>
+            </li>
+            
+            
+           
+                   <li>
+                       <a href='' rel="alternate" type="application/rss+xml" title="Richie Lee" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fas fa-circle fa-stack-2x"></i>
+                               <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+            
+             </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Richie Lee 2023
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function loadAsync(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        loadAsync("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    loadAsync("https://cdn.jsdelivr.net/npm/fastclick@1.0.6/lib/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+
+
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        
+        
+        
+        
+            _containerSelector = 'div.post-container'
+        
+
+        
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        
+        $(selector).html('')
+
+        
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    
+
+
+    loadAsync("\/js\/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+
+
+
+</body>
+</html>

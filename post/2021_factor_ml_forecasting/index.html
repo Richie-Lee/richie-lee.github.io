@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Richie Lee">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="/img/2021_Houseprice_Forecast/Amsterdam.jpg">
+    <meta property="twitter:image" content="/img/2021_Houseprice_Forecast/Amsterdam.jpg" />
+    
+
+    
+    <meta name="title" content="PCA Machine Learning Hybrid Models: Real Estate Forecasting" />
+    <meta property="og:title" content="PCA Machine Learning Hybrid Models: Real Estate Forecasting" />
+    <meta property="twitter:title" content="PCA Machine Learning Hybrid Models: Real Estate Forecasting" />
+    
+
+    
+    <meta name="description" content="This study investigates compression and detection of complex data relations in big data through Dutch House-Price forecasting using PCA, Independent Component Analysis, Sparse PCA alongside machine learning based techniques such as XGBoost &amp; Elastic Nets. Potential of mixture models is also explore through mean model combinations. ">
+    <meta property="og:description" content="This study investigates compression and detection of complex data relations in big data through Dutch House-Price forecasting using PCA, Independent Component Analysis, Sparse PCA alongside machine learning based techniques such as XGBoost &amp; Elastic Nets. Potential of mixture models is also explore through mean model combinations. " />
+    <meta property="twitter:description" content="This study investigates compression and detection of complex data relations in big data through Dutch House-Price forecasting using PCA, Independent Component Analysis, Sparse PCA alongside machine learning based techniques such as XGBoost &amp; Elastic Nets. Potential of mixture models is also explore through mean model combinations. " />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="Microservice, Deep Learning">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>PCA Machine Learning Hybrid Models: Real Estate Forecasting | Personal Webpage</title>
+
+    <link rel="canonical" href="/post/2021_factor_ml_forecasting/">
+
+    
+    
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link rel="stylesheet" href="/css/font-awesome.all.min.css">
+
+    
+    
+
+    
+    <script src="/js/jquery.min.js"></script>
+
+    
+    <script src="/js/bootstrap.min.js"></script>
+
+    
+    <script src="/js/hux-blog.min.js"></script>
+
+    
+    <script src="/js/lazysizes.min.js"></script>
+
+    
+    
+
+</head>
+
+
+
+
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Richie Lee</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">All Posts</a>
+                    </li>
+                    
+                        
+                        <li>
+                            <a href="/categories/projects/">projects</a>
+                        </li>
+                        
+                    
+                    
+		    
+                        <li><a href="/about//">ABOUT</a></li>
+                    
+		            <li>
+                        <a href="/search"><i class="fa fa-search"></i></a>
+		           </li>
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('/img/2021_Houseprice_Forecast/Amsterdam.jpg')
+    }
+</style>
+
+<header class="intro-header" >
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/data-science" title="Data Science">
+                            Data Science
+                        </a>
+                        
+                        <a class="tag" href="/tags/forecasting" title="Forecasting">
+                            Forecasting
+                        </a>
+                        
+                        <a class="tag" href="/tags/machine-learning" title="Machine Learning">
+                            Machine Learning
+                        </a>
+                        
+                        <a class="tag" href="/tags/econometrics" title="Econometrics">
+                            Econometrics
+                        </a>
+                        
+                        <a class="tag" href="/tags/dimension-reduction" title="Dimension Reduction">
+                            Dimension Reduction
+                        </a>
+                        
+                    </div>
+                    <h1>PCA Machine Learning Hybrid Models: Real Estate Forecasting</h1>
+                    <h2 class="subheading">Mining big data using parsimonious factor, machine learning, variable selection and shrinkage methods</h2>
+                    <span class="meta">
+                        
+                            Posted by 
+                            
+                                Richie
+                             
+                            on 
+                            Sunday, June 6, 2021
+                            
+                            
+                            
+                            
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <h2 id="tldr">TL:DR</h2>
+<p><em>The objective of this study is to predict Dutch House prices using macroeconomic variables that were collected from Government open-source databases. Given the high number of explanatory variables relative to the number of observations, we recognise a good fit with parsimonious modelling. These models are characterised by their great explanatory power from minimal resources and are especially valuable in cases of limited or low-frequency data.</em></p>
+<p><em>The methods considered follow <a href="https://www.sciencedirect.com/science/article/abs/pii/S0169207016300668">Kim &amp; Swanson (2018)</a> hybrid model design, where we combine factor modelling techniques (PCA, ICA, Sparse PCA) and machine learning ensembles (Boosting) and regularization methods (Elastic Net, Ridge regression, LASSO). Overall, the best results were indeed produced by Machine Learning combined with factor analysis, where model selection appeared to be strongly case-dependent. Mean model combinations as a solution provided the overall best results, improving performance up to 25% from regular implementations.</em></p>
+<hr>
+<h2 id="context">Context</h2>
+<p>In recent years or even decades, there has been a growing recognition of the importance of the interactive connection between the real-estate market and the macroeconomy <a href="https://www.sciencedirect.com/science/article/abs/pii/S1051137704000397">Leung (2004)</a>. However, as something that is driven by numerious aspects, it is not easy to model. For this purpose, we employ PCA Machine Learning hybrid models alongside various variations to tackle common challenges in this context such as high dimensionality, low-frequency data, multicollinearity, biases and complex non-linear relations.</p>
+<h2 id="data">Data</h2>
+<p>The data was sourced from a government database (<a href="https://opendata.cbs.nl/statline/#/CBS/nl/dataset/84097NED/table">CBS</a>) and includes key macroeconomic indicators covering various sectors of the economy. After eliminating irrelevant variables, <strong>57 variables (N)</strong> were retained, reported over <strong>88 quarters (T)</strong> spanning from the first quarter of 1999 to the last quarter of 2020. The target variables were various indices of Dutch Housing prices.</p>
+<p>Example of 1 year of data:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ts" data-lang="ts"><span style="display:flex;"><span><span style="color:#ff79c6">|</span>    <span style="color:#ff79c6">|</span> Perioden <span style="color:#ff79c6">|</span>   Totaal binnenlandse sectoren<span style="color:#ff79c6">/</span>Bruto binnenlands product marktprijzen (mln euro) <span style="color:#ff79c6">|</span>   Totaal binnenlandse sectoren<span style="color:#ff79c6">/</span>Verbruik van vaste activa (mln euro) <span style="color:#ff79c6">|</span>   Totaal binnenlandse sectoren<span style="color:#ff79c6">/</span>Exploitatieoverschot en gemengd inkomen (mln euro) <span style="color:#ff79c6">|</span>   Totaal binnenlandse sectoren<span style="color:#ff79c6">/</span>Nationaal inkomen (bruto) (mln euro) <span style="color:#ff79c6">|</span>   Totaal binnenlandse sectoren<span style="color:#ff79c6">/</span>Beschikbaar nationaal inkomen (bruto) (mln euro) <span style="color:#ff79c6">|</span>   Totaal binnenlandse sectoren<span style="color:#ff79c6">/</span>Nationale besparingen (bruto) (mln euro) <span style="color:#ff79c6">|</span>   Totaal binnenlandse sectoren<span style="color:#ff79c6">/</span>Investeringen (bruto) (mln euro) <span style="color:#ff79c6">|</span>   Totaal binnenlandse sectoren<span style="color:#ff79c6">/</span>Nationaal vorderingensaldo (mln euro) <span style="color:#ff79c6">|</span>   Totaal binnenlandse sectoren<span style="color:#ff79c6">/</span>Saldo kredieten aan <span style="color:#ff79c6">private</span> sector (<span style="color:#ff79c6">%</span> bbp) <span style="color:#ff79c6">|</span>   Totaal binnenlandse sectoren<span style="color:#ff79c6">/</span>Krediet aan <span style="color:#ff79c6">private</span> sector, ultimo stand (<span style="color:#ff79c6">%</span> bbp) <span style="color:#ff79c6">|</span> Totaal binnenlandse sectoren<span style="color:#ff79c6">/</span>Arbeidsvolume werkzame personen (<span style="color:#bd93f9">1000</span> arbeidsjaren)   <span style="color:#ff79c6">|</span>   Niet<span style="color:#ff79c6">-</span>financiële vennootschappen<span style="color:#ff79c6">/</span>Bruto toegevoegde waarde (mln euro) <span style="color:#ff79c6">|</span>   Niet<span style="color:#ff79c6">-</span>financiële vennootschappen<span style="color:#ff79c6">/</span>Exploitatieoverschot (bruto) (mln euro) <span style="color:#ff79c6">|</span>   Niet<span style="color:#ff79c6">-</span>financiële vennootschappen<span style="color:#ff79c6">/</span>Brutowinst vóór belasting (mln euro) <span style="color:#ff79c6">|</span>   Niet<span style="color:#ff79c6">-</span>financiële vennootschappen<span style="color:#ff79c6">/</span>Winst van buitenlandse dochters (mln euro) <span style="color:#ff79c6">|</span>   Niet<span style="color:#ff79c6">-</span>financiële vennootschappen<span style="color:#ff79c6">/</span>Winstquote (<span style="color:#ff79c6">%</span> toegevoegde waarde) <span style="color:#ff79c6">|</span>   Niet<span style="color:#ff79c6">-</span>financiële vennootschappen<span style="color:#ff79c6">/</span>Investeringsquote (<span style="color:#ff79c6">%</span> toegevoegde waarde) <span style="color:#ff79c6">|</span> Niet<span style="color:#ff79c6">-</span>financiële vennootschappen<span style="color:#ff79c6">/</span>Arbeidsvolume werknemers (<span style="color:#bd93f9">1000</span> arbeidsjaren)   <span style="color:#ff79c6">|</span>   Financiële instellingen<span style="color:#ff79c6">/</span>Bruto toegevoegde waarde (mln euro) <span style="color:#ff79c6">|</span>   Financiële instellingen<span style="color:#ff79c6">/</span>Bruto winst vóór belasting (mln euro) <span style="color:#ff79c6">|</span>   Financiële instellingen<span style="color:#ff79c6">/</span>Winst van buitenlandse dochters (mln euro) <span style="color:#ff79c6">|</span>   Financiële instellingen<span style="color:#ff79c6">/</span>Financieel vermogen (mln euro) <span style="color:#ff79c6">|</span>   Financiële instellingen<span style="color:#ff79c6">/</span>Ontvangen inkomen uit vermogen (<span style="color:#ff79c6">%</span> totaal vorderingen) <span style="color:#ff79c6">|</span>   Financiële instellingen<span style="color:#ff79c6">/</span>Betaald inkomen uit vermogen (<span style="color:#ff79c6">%</span> totaal schulden) <span style="color:#ff79c6">|</span>   Financiële instellingen<span style="color:#ff79c6">/</span>Liquiditeit ratio monetaire instellingen (<span style="color:#ff79c6">%</span>) <span style="color:#ff79c6">|</span>   Financiële instellingen<span style="color:#ff79c6">/</span>Financiële activa pensioenfondsen (mln euro) <span style="color:#ff79c6">|</span> Financiële instellingen<span style="color:#ff79c6">/</span>Arbeidsvolume werknemers (<span style="color:#bd93f9">1000</span> arbeidsjaren)   <span style="color:#ff79c6">|</span>   Overheid geconsolideerd<span style="color:#ff79c6">/</span>Totaal inkomsten (<span style="color:#ff79c6">%</span> bbp) <span style="color:#ff79c6">|</span>   Overheid geconsolideerd<span style="color:#ff79c6">/</span>Belasting<span style="color:#ff79c6">-</span> en premieontvangsten (<span style="color:#ff79c6">%</span> bbp) <span style="color:#ff79c6">|</span>   Overheid geconsolideerd<span style="color:#ff79c6">/</span>Totaal uitgaven (<span style="color:#ff79c6">%</span> bbp) <span style="color:#ff79c6">|</span>   Overheid geconsolideerd<span style="color:#ff79c6">/</span>Overheidsschuld (EMU) (<span style="color:#ff79c6">%</span> bbp) <span style="color:#ff79c6">|</span>   Overheid geconsolideerd<span style="color:#ff79c6">/</span>Overheidssaldo (EMU) (<span style="color:#ff79c6">%</span> bbp) <span style="color:#ff79c6">|</span> Overheid geconsolideerd<span style="color:#ff79c6">/</span>Arbeidsvolume werknemers (<span style="color:#bd93f9">1000</span> arbeidsjaren)   <span style="color:#ff79c6">|</span>   Huishoudens incl. IZW<span style="color:#f1fa8c">&#39;s t.b.v. huish./Exploitatieoverschot en gemengd inkomen (mln euro) |   Huishoudens incl. IZW&#39;</span>s t.b.v. huish.<span style="color:#ff79c6">/</span>Gemengd inkomen (mln euro) <span style="color:#ff79c6">|</span>   Huishoudens incl. IZW<span style="color:#f1fa8c">&#39;s t.b.v. huish./Beschikbaar inkomen (bruto) (mln euro) |   Huishoudens incl. IZW&#39;</span>s t.b.v. huish.<span style="color:#ff79c6">/</span>Reëel beschikbaar inkomen (netto) (<span style="color:#ff79c6">%</span> volumemutaties) <span style="color:#ff79c6">|</span>   Huishoudens incl. IZW<span style="color:#f1fa8c">&#39;s t.b.v. huish./Alternatief beschikbaar inkomen (bruto) (mln euro) |   Huishoudens incl. IZW&#39;</span>s t.b.v. huish.<span style="color:#ff79c6">/</span>Consumptieve bestedingen (bruto) (mln euro) <span style="color:#ff79c6">|</span>   Huishoudens incl. IZW<span style="color:#f1fa8c">&#39;s t.b.v. huish./Vrije / individuele besparingen (mln euro) |   Huishoudens incl. IZW&#39;</span>s t.b.v. huish.<span style="color:#ff79c6">/</span>Spaarquote (<span style="color:#ff79c6">%</span> beschikbaar inkomen) <span style="color:#ff79c6">|</span>   Huishoudens incl. IZW<span style="color:#f1fa8c">&#39;s t.b.v. huish./Investeringsquote (% beschikbaar inkomen) |   Huishoudens incl. IZW&#39;</span>s t.b.v. huish.<span style="color:#ff79c6">/</span>Spaartegoeden en overige deposito<span style="color:#f1fa8c">&#39;s (mln euro) |   Huishoudens incl. IZW&#39;</span>s t.b.v. huish.<span style="color:#ff79c6">/</span>Verzekerings<span style="color:#ff79c6">-</span> en pensioenregelingen (mln euro) <span style="color:#ff79c6">|</span>   Huishoudens incl. IZW<span style="color:#f1fa8c">&#39;s t.b.v. huish./Voorzieningen pensioenverzekeringen (mln euro) |   Huishoudens incl. IZW&#39;</span>s t.b.v. huish.<span style="color:#ff79c6">/</span>Woninghypotheken (mln euro) <span style="color:#ff79c6">|</span>   Huishoudens incl. IZW<span style="color:#f1fa8c">&#39;s t.b.v. huish./Saldo opgenomen en afgeloste hypotheken (mln euro) | Huishoudens incl. IZW&#39;</span>s t.b.v. huish.<span style="color:#ff79c6">/</span>Arbeidsvolume werknemers (<span style="color:#bd93f9">1000</span> arbeidsjaren)   <span style="color:#ff79c6">|</span> Huishoudens incl. IZW&#39;s t.b.v. huish.<span style="color:#ff79c6">/</span>Arbeidsvolume zelfstandigen (<span style="color:#bd93f9">1000</span> arbeidsjaren)   <span style="color:#ff79c6">|</span>   Buitenland<span style="color:#ff79c6">/</span>Aandeel uitvoeroverschot <span style="color:#ff79c6">in</span> bbp (<span style="color:#ff79c6">%</span> bbp) <span style="color:#ff79c6">|</span>   Buitenland<span style="color:#ff79c6">/</span>Uitvoeroverschot (mln euro) <span style="color:#ff79c6">|</span>   Buitenland<span style="color:#ff79c6">/</span>Saldo primaire inkomens buitenland (mln euro) <span style="color:#ff79c6">|</span>   Buitenland<span style="color:#ff79c6">/</span>Saldo inkomensoverdrachten buitenland (mln euro) <span style="color:#ff79c6">|</span>   Buitenland<span style="color:#ff79c6">/</span>Saldo kapitaaloverdrachten buitenland (mln euro) <span style="color:#ff79c6">|</span>   Buitenland<span style="color:#ff79c6">/</span>Saldo lopende rekening (mln euro) <span style="color:#ff79c6">|</span>   Buitenland<span style="color:#ff79c6">/</span>Extern vermogen (mln euro) <span style="color:#ff79c6">|</span>   Buitenland<span style="color:#ff79c6">/</span>Extern vermogen; marktwaarde (mln euro) <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|---:|:---------|---------------------------------------------------------------------------------:|--------------------------------------------------------------------:|----------------------------------------------------------------------------------:|--------------------------------------------------------------------:|--------------------------------------------------------------------------------:|------------------------------------------------------------------------:|----------------------------------------------------------------:|---------------------------------------------------------------------:|--------------------------------------------------------------------------:|--------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------|----------------------------------------------------------------------:|--------------------------------------------------------------------------:|-----------------------------------------------------------------------:|-----------------------------------------------------------------------------:|--------------------------------------------------------------------:|---------------------------------------------------------------------------:|:-------------------------------------------------------------------------------|--------------------------------------------------------------:|----------------------------------------------------------------:|---------------------------------------------------------------------:|---------------------------------------------------------:|--------------------------------------------------------------------------------:|---------------------------------------------------------------------------:|-----------------------------------------------------------------------:|-----------------------------------------------------------------------:|:-----------------------------------------------------------------------|---------------------------------------------------:|------------------------------------------------------------------:|--------------------------------------------------:|--------------------------------------------------------:|-------------------------------------------------------:|:-----------------------------------------------------------------------|-------------------------------------------------------------------------------------------:|-------------------------------------------------------------------:|-------------------------------------------------------------------------------:|---------------------------------------------------------------------------------------------:|-------------------------------------------------------------------------------------------:|------------------------------------------------------------------------------------:|-----------------------------------------------------------------------------------:|---------------------------------------------------------------------------:|----------------------------------------------------------------------------------:|---------------------------------------------------------------------------------------:|---------------------------------------------------------------------------------------:|---------------------------------------------------------------------------------------:|--------------------------------------------------------------------:|-------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------|-----------------------------------------------------:|-----------------------------------------:|-----------------------------------------------------------:|--------------------------------------------------------------:|--------------------------------------------------------------:|-----------------------------------------------:|----------------------------------------:|-----------------------------------------------------:|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">0</span> <span style="color:#ff79c6">|</span> <span style="color:#bd93f9">2021</span> Q1  <span style="color:#ff79c6">|</span>                                                                           <span style="color:#bd93f9">203160</span> <span style="color:#ff79c6">|</span>                                                               <span style="color:#bd93f9">36087</span> <span style="color:#ff79c6">|</span>                                                                             <span style="color:#bd93f9">89844</span> <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">209750</span> <span style="color:#ff79c6">|</span>                                                                          <span style="color:#bd93f9">207454</span> <span style="color:#ff79c6">|</span>                                                                   <span style="color:#bd93f9">73554</span> <span style="color:#ff79c6">|</span>                                                           <span style="color:#bd93f9">45605</span> <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">27913</span> <span style="color:#ff79c6">|</span>                                                                      <span style="color:#ff79c6">-</span><span style="color:#bd93f9">0.9</span> <span style="color:#ff79c6">|</span>                                                                           <span style="color:#bd93f9">236.2</span> <span style="color:#ff79c6">|</span> .                                                                                  <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">116533</span> <span style="color:#ff79c6">|</span>                                                                     <span style="color:#bd93f9">51015</span> <span style="color:#ff79c6">|</span>                                                                  <span style="color:#bd93f9">69706</span> <span style="color:#ff79c6">|</span>                                                                        <span style="color:#bd93f9">17739</span> <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">43.8</span> <span style="color:#ff79c6">|</span>                                                                       <span style="color:#bd93f9">19.6</span> <span style="color:#ff79c6">|</span> .                                                                              <span style="color:#ff79c6">|</span>                                                         <span style="color:#bd93f9">11575</span> <span style="color:#ff79c6">|</span>                                                           <span style="color:#bd93f9">10053</span> <span style="color:#ff79c6">|</span>                                                                 <span style="color:#bd93f9">3873</span> <span style="color:#ff79c6">|</span>                                                    <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1061</span> <span style="color:#ff79c6">|</span>                                                                             <span style="color:#bd93f9">0.9</span> <span style="color:#ff79c6">|</span>                                                                        <span style="color:#bd93f9">0.5</span> <span style="color:#ff79c6">|</span>                                                                   <span style="color:#bd93f9">27.6</span> <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">1862226</span> <span style="color:#ff79c6">|</span> .                                                                      <span style="color:#ff79c6">|</span>                                               <span style="color:#bd93f9">44</span>   <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">39.3</span> <span style="color:#ff79c6">|</span>                                              <span style="color:#bd93f9">49.1</span> <span style="color:#ff79c6">|</span>                                                    <span style="color:#bd93f9">55.1</span> <span style="color:#ff79c6">|</span>                                                   <span style="color:#ff79c6">-</span><span style="color:#bd93f9">5.1</span> <span style="color:#ff79c6">|</span> .                                                                      <span style="color:#ff79c6">|</span>                                                                                      <span style="color:#bd93f9">26212</span> <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">20292</span> <span style="color:#ff79c6">|</span>                                                                         <span style="color:#bd93f9">100678</span> <span style="color:#ff79c6">|</span>                                                                                          <span style="color:#bd93f9">1.6</span> <span style="color:#ff79c6">|</span>                                                                                     <span style="color:#bd93f9">135688</span> <span style="color:#ff79c6">|</span>                                                                               <span style="color:#bd93f9">81629</span> <span style="color:#ff79c6">|</span>                                                                              <span style="color:#bd93f9">19049</span> <span style="color:#ff79c6">|</span>                                                                       <span style="color:#bd93f9">23</span>   <span style="color:#ff79c6">|</span>                                                                              <span style="color:#bd93f9">13.8</span> <span style="color:#ff79c6">|</span>                                                                                 <span style="color:#bd93f9">404992</span> <span style="color:#ff79c6">|</span>                                                                                <span style="color:#bd93f9">1987684</span> <span style="color:#ff79c6">|</span>                                                                                <span style="color:#bd93f9">1797573</span> <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">758587</span> <span style="color:#ff79c6">|</span>                                                                                       <span style="color:#bd93f9">6648</span> <span style="color:#ff79c6">|</span> .                                                                                    <span style="color:#ff79c6">|</span> .                                                                                       <span style="color:#ff79c6">|</span>                                                 <span style="color:#bd93f9">11.6</span> <span style="color:#ff79c6">|</span>                                    <span style="color:#bd93f9">23586</span> <span style="color:#ff79c6">|</span>                                                       <span style="color:#bd93f9">6590</span> <span style="color:#ff79c6">|</span>                                                         <span style="color:#ff79c6">-</span><span style="color:#bd93f9">2227</span> <span style="color:#ff79c6">|</span>                                                           <span style="color:#ff79c6">-</span><span style="color:#bd93f9">13</span> <span style="color:#ff79c6">|</span>                                          <span style="color:#bd93f9">27949</span> <span style="color:#ff79c6">|</span>                                  <span style="color:#bd93f9">812781</span> <span style="color:#ff79c6">|</span>                                               <span style="color:#bd93f9">897943</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">1</span> <span style="color:#ff79c6">|</span> <span style="color:#bd93f9">2021</span> Q2  <span style="color:#ff79c6">|</span>                                                                           <span style="color:#bd93f9">220430</span> <span style="color:#ff79c6">|</span>                                                               <span style="color:#bd93f9">36460</span> <span style="color:#ff79c6">|</span>                                                                             <span style="color:#bd93f9">86104</span> <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">225712</span> <span style="color:#ff79c6">|</span>                                                                          <span style="color:#bd93f9">223677</span> <span style="color:#ff79c6">|</span>                                                                   <span style="color:#bd93f9">76249</span> <span style="color:#ff79c6">|</span>                                                           <span style="color:#bd93f9">48850</span> <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">27943</span> <span style="color:#ff79c6">|</span>                                                                       <span style="color:#bd93f9">2.6</span> <span style="color:#ff79c6">|</span>                                                                           <span style="color:#bd93f9">231.5</span> <span style="color:#ff79c6">|</span> .                                                                                  <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">127365</span> <span style="color:#ff79c6">|</span>                                                                     <span style="color:#bd93f9">46646</span> <span style="color:#ff79c6">|</span>                                                                  <span style="color:#bd93f9">69302</span> <span style="color:#ff79c6">|</span>                                                                        <span style="color:#bd93f9">18749</span> <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">36.6</span> <span style="color:#ff79c6">|</span>                                                                       <span style="color:#bd93f9">18.4</span> <span style="color:#ff79c6">|</span> .                                                                              <span style="color:#ff79c6">|</span>                                                         <span style="color:#bd93f9">10930</span> <span style="color:#ff79c6">|</span>                                                            <span style="color:#bd93f9">9927</span> <span style="color:#ff79c6">|</span>                                                                 <span style="color:#bd93f9">3313</span> <span style="color:#ff79c6">|</span>                                                    <span style="color:#bd93f9">42255</span> <span style="color:#ff79c6">|</span>                                                                             <span style="color:#bd93f9">1</span>   <span style="color:#ff79c6">|</span>                                                                        <span style="color:#bd93f9">0.6</span> <span style="color:#ff79c6">|</span>                                                                   <span style="color:#bd93f9">28.1</span> <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">1926147</span> <span style="color:#ff79c6">|</span> .                                                                      <span style="color:#ff79c6">|</span>                                               <span style="color:#bd93f9">43.9</span> <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">39.1</span> <span style="color:#ff79c6">|</span>                                              <span style="color:#bd93f9">47.5</span> <span style="color:#ff79c6">|</span>                                                    <span style="color:#bd93f9">54.1</span> <span style="color:#ff79c6">|</span>                                                   <span style="color:#ff79c6">-</span><span style="color:#bd93f9">3.6</span> <span style="color:#ff79c6">|</span> .                                                                      <span style="color:#ff79c6">|</span>                                                                                      <span style="color:#bd93f9">27672</span> <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">21496</span> <span style="color:#ff79c6">|</span>                                                                         <span style="color:#bd93f9">125091</span> <span style="color:#ff79c6">|</span>                                                                                          <span style="color:#bd93f9">3.1</span> <span style="color:#ff79c6">|</span>                                                                                     <span style="color:#bd93f9">164556</span> <span style="color:#ff79c6">|</span>                                                                               <span style="color:#bd93f9">90657</span> <span style="color:#ff79c6">|</span>                                                                              <span style="color:#bd93f9">34434</span> <span style="color:#ff79c6">|</span>                                                                       <span style="color:#bd93f9">31.5</span> <span style="color:#ff79c6">|</span>                                                                              <span style="color:#bd93f9">11.9</span> <span style="color:#ff79c6">|</span>                                                                                 <span style="color:#bd93f9">412211</span> <span style="color:#ff79c6">|</span>                                                                                <span style="color:#bd93f9">2000090</span> <span style="color:#ff79c6">|</span>                                                                                <span style="color:#bd93f9">1809912</span> <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">767128</span> <span style="color:#ff79c6">|</span>                                                                                       <span style="color:#bd93f9">8542</span> <span style="color:#ff79c6">|</span> .                                                                                    <span style="color:#ff79c6">|</span> .                                                                                       <span style="color:#ff79c6">|</span>                                                 <span style="color:#bd93f9">10.9</span> <span style="color:#ff79c6">|</span>                                    <span style="color:#bd93f9">24087</span> <span style="color:#ff79c6">|</span>                                                       <span style="color:#bd93f9">5282</span> <span style="color:#ff79c6">|</span>                                                         <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1970</span> <span style="color:#ff79c6">|</span>                                                            <span style="color:#bd93f9">35</span> <span style="color:#ff79c6">|</span>                                          <span style="color:#bd93f9">27399</span> <span style="color:#ff79c6">|</span>                                  <span style="color:#bd93f9">841691</span> <span style="color:#ff79c6">|</span>                                               <span style="color:#bd93f9">941315</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">2</span> <span style="color:#ff79c6">|</span> <span style="color:#bd93f9">2021</span> Q3  <span style="color:#ff79c6">|</span>                                                                           <span style="color:#bd93f9">217899</span> <span style="color:#ff79c6">|</span>                                                               <span style="color:#bd93f9">36831</span> <span style="color:#ff79c6">|</span>                                                                             <span style="color:#bd93f9">99224</span> <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">222931</span> <span style="color:#ff79c6">|</span>                                                                          <span style="color:#bd93f9">221299</span> <span style="color:#ff79c6">|</span>                                                                   <span style="color:#bd93f9">71560</span> <span style="color:#ff79c6">|</span>                                                           <span style="color:#bd93f9">45930</span> <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">25708</span> <span style="color:#ff79c6">|</span>                                                                       <span style="color:#bd93f9">2.9</span> <span style="color:#ff79c6">|</span>                                                                           <span style="color:#bd93f9">227.7</span> <span style="color:#ff79c6">|</span> .                                                                                  <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">127082</span> <span style="color:#ff79c6">|</span>                                                                     <span style="color:#bd93f9">58406</span> <span style="color:#ff79c6">|</span>                                                                  <span style="color:#bd93f9">78038</span> <span style="color:#ff79c6">|</span>                                                                        <span style="color:#bd93f9">17997</span> <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">46</span>   <span style="color:#ff79c6">|</span>                                                                       <span style="color:#bd93f9">15.3</span> <span style="color:#ff79c6">|</span> .                                                                              <span style="color:#ff79c6">|</span>                                                         <span style="color:#bd93f9">10442</span> <span style="color:#ff79c6">|</span>                                                            <span style="color:#bd93f9">9150</span> <span style="color:#ff79c6">|</span>                                                                 <span style="color:#bd93f9">2667</span> <span style="color:#ff79c6">|</span>                                                    <span style="color:#bd93f9">15380</span> <span style="color:#ff79c6">|</span>                                                                             <span style="color:#bd93f9">1</span>   <span style="color:#ff79c6">|</span>                                                                        <span style="color:#bd93f9">0.6</span> <span style="color:#ff79c6">|</span>                                                                   <span style="color:#bd93f9">28.8</span> <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">1915793</span> <span style="color:#ff79c6">|</span> .                                                                      <span style="color:#ff79c6">|</span>                                               <span style="color:#bd93f9">43.7</span> <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">38.8</span> <span style="color:#ff79c6">|</span>                                              <span style="color:#bd93f9">46.9</span> <span style="color:#ff79c6">|</span>                                                    <span style="color:#bd93f9">52.2</span> <span style="color:#ff79c6">|</span>                                                   <span style="color:#ff79c6">-</span><span style="color:#bd93f9">3.2</span> <span style="color:#ff79c6">|</span> .                                                                      <span style="color:#ff79c6">|</span>                                                                                      <span style="color:#bd93f9">28747</span> <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">22424</span> <span style="color:#ff79c6">|</span>                                                                         <span style="color:#bd93f9">106654</span> <span style="color:#ff79c6">|</span>                                                                                          <span style="color:#bd93f9">2.8</span> <span style="color:#ff79c6">|</span>                                                                                     <span style="color:#bd93f9">144662</span> <span style="color:#ff79c6">|</span>                                                                               <span style="color:#bd93f9">94792</span> <span style="color:#ff79c6">|</span>                                                                              <span style="color:#bd93f9">11862</span> <span style="color:#ff79c6">|</span>                                                                       <span style="color:#bd93f9">16.4</span> <span style="color:#ff79c6">|</span>                                                                              <span style="color:#bd93f9">12.7</span> <span style="color:#ff79c6">|</span>                                                                                 <span style="color:#bd93f9">410479</span> <span style="color:#ff79c6">|</span>                                                                                <span style="color:#bd93f9">2002704</span> <span style="color:#ff79c6">|</span>                                                                                <span style="color:#bd93f9">1812146</span> <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">777751</span> <span style="color:#ff79c6">|</span>                                                                                      <span style="color:#bd93f9">10621</span> <span style="color:#ff79c6">|</span> .                                                                                    <span style="color:#ff79c6">|</span> .                                                                                       <span style="color:#ff79c6">|</span>                                                 <span style="color:#bd93f9">10.2</span> <span style="color:#ff79c6">|</span>                                    <span style="color:#bd93f9">22173</span> <span style="color:#ff79c6">|</span>                                                       <span style="color:#bd93f9">5032</span> <span style="color:#ff79c6">|</span>                                                         <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1575</span> <span style="color:#ff79c6">|</span>                                                           <span style="color:#ff79c6">-</span><span style="color:#bd93f9">39</span> <span style="color:#ff79c6">|</span>                                          <span style="color:#bd93f9">25630</span> <span style="color:#ff79c6">|</span>                                  <span style="color:#bd93f9">755212</span> <span style="color:#ff79c6">|</span>                                               <span style="color:#bd93f9">899768</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">3</span> <span style="color:#ff79c6">|</span> <span style="color:#bd93f9">2021</span> Q4  <span style="color:#ff79c6">|</span>                                                                           <span style="color:#bd93f9">229098</span> <span style="color:#ff79c6">|</span>                                                               <span style="color:#bd93f9">37336</span> <span style="color:#ff79c6">|</span>                                                                             <span style="color:#bd93f9">98845</span> <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">226110</span> <span style="color:#ff79c6">|</span>                                                                          <span style="color:#bd93f9">225377</span> <span style="color:#ff79c6">|</span>                                                                   <span style="color:#bd93f9">71559</span> <span style="color:#ff79c6">|</span>                                                           <span style="color:#bd93f9">47075</span> <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">24510</span> <span style="color:#ff79c6">|</span>                                                                       <span style="color:#bd93f9">9.6</span> <span style="color:#ff79c6">|</span>                                                                           <span style="color:#bd93f9">223.7</span> <span style="color:#ff79c6">|</span> .                                                                                  <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">131185</span> <span style="color:#ff79c6">|</span>                                                                     <span style="color:#bd93f9">57727</span> <span style="color:#ff79c6">|</span>                                                                  <span style="color:#bd93f9">82148</span> <span style="color:#ff79c6">|</span>                                                                        <span style="color:#bd93f9">21887</span> <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">44</span>   <span style="color:#ff79c6">|</span>                                                                       <span style="color:#bd93f9">17.9</span> <span style="color:#ff79c6">|</span> .                                                                              <span style="color:#ff79c6">|</span>                                                         <span style="color:#bd93f9">10881</span> <span style="color:#ff79c6">|</span>                                                           <span style="color:#bd93f9">11298</span> <span style="color:#ff79c6">|</span>                                                                 <span style="color:#bd93f9">3208</span> <span style="color:#ff79c6">|</span>                                                    <span style="color:#bd93f9">97543</span> <span style="color:#ff79c6">|</span>                                                                             <span style="color:#bd93f9">1.1</span> <span style="color:#ff79c6">|</span>                                                                        <span style="color:#bd93f9">0.6</span> <span style="color:#ff79c6">|</span>                                                                   <span style="color:#bd93f9">27.3</span> <span style="color:#ff79c6">|</span>                                                                <span style="color:#bd93f9">1963984</span> <span style="color:#ff79c6">|</span> .                                                                      <span style="color:#ff79c6">|</span>                                               <span style="color:#bd93f9">43.7</span> <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">38.8</span> <span style="color:#ff79c6">|</span>                                              <span style="color:#bd93f9">46.1</span> <span style="color:#ff79c6">|</span>                                                    <span style="color:#bd93f9">51.7</span> <span style="color:#ff79c6">|</span>                                                   <span style="color:#ff79c6">-</span><span style="color:#bd93f9">2.3</span> <span style="color:#ff79c6">|</span> .                                                                      <span style="color:#ff79c6">|</span>                                                                                      <span style="color:#bd93f9">29065</span> <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">22629</span> <span style="color:#ff79c6">|</span>                                                                         <span style="color:#bd93f9">112906</span> <span style="color:#ff79c6">|</span>                                                                                          <span style="color:#bd93f9">2.3</span> <span style="color:#ff79c6">|</span>                                                                                     <span style="color:#bd93f9">153009</span> <span style="color:#ff79c6">|</span>                                                                               <span style="color:#bd93f9">93832</span> <span style="color:#ff79c6">|</span>                                                                              <span style="color:#bd93f9">19074</span> <span style="color:#ff79c6">|</span>                                                                       <span style="color:#bd93f9">20.9</span> <span style="color:#ff79c6">|</span>                                                                              <span style="color:#bd93f9">12.7</span> <span style="color:#ff79c6">|</span>                                                                                 <span style="color:#bd93f9">408758</span> <span style="color:#ff79c6">|</span>                                                                                <span style="color:#bd93f9">2005746</span> <span style="color:#ff79c6">|</span>                                                                                <span style="color:#bd93f9">1814645</span> <span style="color:#ff79c6">|</span>                                                              <span style="color:#bd93f9">785477</span> <span style="color:#ff79c6">|</span>                                                                                       <span style="color:#bd93f9">7718</span> <span style="color:#ff79c6">|</span> .                                                                                    <span style="color:#ff79c6">|</span> .                                                                                       <span style="color:#ff79c6">|</span>                                                 <span style="color:#bd93f9">12.3</span> <span style="color:#ff79c6">|</span>                                    <span style="color:#bd93f9">28132</span> <span style="color:#ff79c6">|</span>                                                      <span style="color:#ff79c6">-</span><span style="color:#bd93f9">2988</span> <span style="color:#ff79c6">|</span>                                                          <span style="color:#ff79c6">-</span><span style="color:#bd93f9">660</span> <span style="color:#ff79c6">|</span>                                                            <span style="color:#bd93f9">26</span> <span style="color:#ff79c6">|</span>                                          <span style="color:#bd93f9">24484</span> <span style="color:#ff79c6">|</span>                                  <span style="color:#bd93f9">812567</span> <span style="color:#ff79c6">|</span>                                               <span style="color:#bd93f9">970450</span> <span style="color:#ff79c6">|</span>
+</span></span></code></pre></div><p>To enhance data quality, the following considerations were taken into account:</p>
+<ol>
+<li>
+<p><strong>Non-stationary</strong>: Through economic intuition and exploratory analysis, a significant trend and <strong>Seasonality</strong> were identified, leading to variations in mean and variance over time. To address this, the target variable was transformed as follows:
+y_growth_rate, t = log(y_t / y_{t-4}) * 100%.The values that it produces are interpreted as the growth rate relative to the previous year expressed in percentages.</p>
+</li>
+<li>
+<p><strong>Standardization</strong>: Variables measured on different scales could introduce biases during analysis. To mitigate this issue, all variables were rescaled to have a mean of 0 and a standard deviation of 1 as follows:
+x_std = (x - mu_x) / sigma_x. This preserves relative differences while removing magnitude biases.</p>
+</li>
+<li>
+<p><strong>Missing Values</strong>: Care was taken not to impute missing values with future data or aggregates containing future information, as it can lead to data leakage and increased risk of overfitting.</p>
+</li>
+<li>
+<p><strong>Multicollinearity</strong>: Variables with perfect correlation were identified and removed to avoid identification problems in regression designs.</p>
+</li>
+</ol>
+<h3 id="train-test-split">Train-test split</h3>
+<p>With the exception of the autoregressive benchmark model, all models require tuning. For this purpose, a train/validation/test split is implemented alongside an expanding window (also known as recursive estimation). This method uses a consistent validation size (5 quarters), a consistent testing size (1 quarter), and increases the training size by one observation with every iteration. For instance, let $\tau$ denote the current time, then this would yield the following split:</p>
+<p>Table: <strong>Train-test split at $t = \tau$</strong></p>
+<table>
+<thead>
+<tr>
+<th>Training</th>
+<th>Validation</th>
+<th>Test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$[0, \tau - 5)$</td>
+<td>$[\tau - 5, \tau]$</td>
+<td>$\tau + 1$</td>
+</tr>
+</tbody>
+</table>
+<h2 id="methodology">Methodology</h2>
+<p>Given the high number of variables (N = 57) and the relatively low number of observations (T = 88) we recognise a good fit with <strong>parsimonious modelling</strong>. These models are characterised by their great explanatory power from minimal resources and are especially valuable in cases of limited or low-frequency data.</p>
+<p>The methods applied here closely follow <a href="https://www.sciencedirect.com/science/article/abs/pii/S0169207016300668">Kim &amp; Swanson (2018)</a>&rsquo;s design, in which factor analysis is combined with machine learning. More specifically, hybrid models are constructed by first applying principle component analyses and then using these factors as input data for 1-step ahead machine learning forecasts. All hyperparameters were tuned using <strong>Grid Search</strong>.</p>
+<h3 id="machine-learning">Machine Learning</h3>
+<h4 id="boosting">Boosting</h4>
+<p>Gradient boosting is an ensemble machine learning technique used for classification and regression modeling. It builds ensembles of decision tree models to correct prediction errors iteratively.
+One prominent implementation of gradient boosting developed by <a href="https://arxiv.org/abs/1603.02754">Chen and Guestrin (2016)</a> is Extreme Gradient Boosting (<strong>XGBoost</strong>), which offers a balance between computational efficiency and performance. This implemenation considers the following hyperparameters:</p>
+<ol>
+<li>
+<p><strong>n_estimators</strong>: Influences the number of trees in the ensemble and the iterations during model fitting.</p>
+</li>
+<li>
+<p><strong>max_depth</strong>: Controls the complexity of individual trees by setting the maximum depth of decision trees.</p>
+</li>
+<li>
+<p><strong>eta (learning rate)</strong>: Weighs the contribution of each model, impacting the overall influence of each tree on the final prediction.</p>
+</li>
+<li>
+<p><strong>subsample</strong>: Introduces randomness by specifying the number of samples (rows) used in constructing each tree.</p>
+</li>
+<li>
+<p><strong>n_features</strong>: Defines the number of features (columns) considered in building each tree, potentially enhancing model robustness.</p>
+</li>
+</ol>
+<p>It&rsquo;s important to be mindful that randomness plays a role in constructing the XGBoost model. Consequently, running the algorithm multiple times on the same data might lead to slight variations due to this inherent stochastic nature.</p>
+<h4 id="elastic-net">Elastic Net</h4>
+<p>Elastic Net (EN) is an extension of linear regression in machine learning that incorporates regularization penalties into the loss function, encouraging simpler models with smaller coefficient values. Specifically, it combines both L2 (<strong>Ridge regression</strong>) and L1 (<strong>LASSO</strong>) penalty functions.</p>
+<p>Ridge regression uses L2 penalties, which introduce shrinkage estimators (ridge estimators) to push the estimations closer to the &ldquo;true&rdquo; population parameters. This is particularly useful in the presence of multicollinearity (highly correlated explanatory variables). Additionally, ridge regression does not require the number of observations (T) to exceed the number of parameters (N). Instead of omitting variables, ridge regression allows the coefficients to converge to 0 as their relevance decreases.</p>
+<p>Elastic Net also incorporates L1 penalties, similar to LASSO (Least Absolute Shrinkage and Selection Operator). However, unlike ridge regression, LASSO omits variables entirely instead of just converging their coefficients to 0. It is especially valuable in handling estimations with many redundant (highly correlated) variables, tending to retain only one variable from correlated parameter sets.</p>
+<p>The Elastic Net method combines both penalty functions and introduces tunable hyperparameters. The specific Elastic Net specification considered in this paper is as follows:</p>
+<pre tabindex="0"><code>P_{EN} = (\alpha * P_{L1}) + ((1 – \alpha) * P_{L2})
+</code></pre><pre tabindex="0"><code>\mathcal{L}_{EN} = \mathcal{L}_{OLS} + \lambda * P_{EN}
+</code></pre><p>Here, $P_{{L1, L2, EN}}$ denotes L1, L2, and Elastic Net penalty functions, respectively. $\mathcal{L}_{{EN, OLS}}$ refers to the loss functions for Elastic Net and Ordinary Least Squares (OLS). The hyperparameters considered here include:</p>
+<ol>
+<li><strong>alpha</strong>: weights the relative contributions of L1 and L2 regularization (e.g., $\alpha =$ 1 implies using LASSO only)</li>
+<li><strong>lambda</strong>: controls the combined weight of the penalty functions.</li>
+</ol>
+<h3 id="factor-analysis">Factor analysis</h3>
+<h4 id="pca-principal-component-analysis">PCA: Principal Component Analysis</h4>
+<p>Principal Component Analysis (PCA) is a well-established method that seeks to reduce dimensions while preserving as much information as possible. After taking the original variables as inputs, PCA derives a set of independent latent variables which are ordered by captured variance. These latent variables are also known as <em>principal components</em> (denote $k$ = number of components used). The underlying idea is that the first $k$ principal components would capture the majority of the information, under the assumption that the components that capture the most variance would be the most informative (generally, but not necessarily true). It is then a matter of optimizing the trade-off between model simplicity (by reducing $k$) and total information (by increasing $k$)</p>
+<p>Reducing dimensionality improves both computational efficiency and overfitting, as these aspects suffer from large sets of variables. This is especially true for machine learning algorithms. By eliminating correlations amongst the components, PCA also improves performance and visualization options. However, in return for these benefits, PCA sacrifices information contained within the variables as well as their interpretability.</p>
+<h4 id="ica-independent-component-analysis">ICA: Independent Component Analysis</h4>
+<p>This method can be considered an extension of PCA, which is commonly used in <strong>signal processing</strong> use-cases (<a href="https://www.youtube.com/watch?v=GgLaP4Des1Q">example</a>). Its primary goal is to extract hidden factors, often referred to as sources, from the data by transforming it into maximally independent components. To achieve this, two conditions need to be satisfied: (1) the data should be statistically independent and (2) non-Gaussian, as this is necessary for identifying independence.</p>
+<p>In terms of specific data preprocessing for Independent Component Analysis (ICA), we recommend pre-whitening the data through centering and whitening. Additionally, it is advisable to omit potentially normally-distributed input variables, for which we used the <strong>Jarque-Bera Normality test</strong>. For the implementation of ICA, the &ldquo;FastICA&rdquo; package is used, known for its efficiency and popularity <a href="https://ieeexplore.ieee.org/abstract/document/777510">Hyvarinen (1999)</a>.</p>
+<h4 id="spca-sparse-principal-component-analysis">SPCA: Sparse Principal Component Analysis</h4>
+<p>Sparse Principle Component analysis (SPCA) can in broad terms be considered a PCA optimization problem (reconstruction
+error minimization) that cleverly uses L1 penalties on the components to introduce sparsity, which
+contribute to reducing noise when handling few training samples. SPCA yields a more parsimonious and interpretable representation. that clearly emphasizes which original features contribute to the difference between samples.</p>
+<h2 id="results">Results</h2>
+<p>To compare performance across models, we rely on absolute errors, R-squared and the Diebold-Mariano test. Note that, while the Diebold-Mariano test is useful for comparing forecast accuracies, it is not geared towards measuring the magnitude and aside from the sign, the critical values do not hold interpretation.</p>
+<p>First, compare the three main base models: OLS, Boosting and Elastic net for each prediction and highlight the best performing one, in terms of absolute error.</p>
+<p>[ Forecast + pie ]</p>
+<p>Though seemingly random, we do observe that the model selection appears to cluster in certain periods. This could imply that certain periods benefitted more from particular model characteristics, for instance, Elastic Nets were shown to be most robust when predicting consistent strong positive trends (2014-2017).</p>
+<p>When adding the different component analysis variations on top of these models, we observe the following preferences:
+[bar]</p>
+<p>Due to the overall mixed results, the best results can probably be achieved to when using ICA and SPCA as a case-dependent complementary tool alongside PCA, rather than complete replacements. Overall, if we would commit to a single factor analysis method, we would opt for regular PCA. The Diebold-Mariano tests support this idea as well:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th>PCA</th>
+<th>ICA</th>
+<th>SPCA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OLS</strong></td>
+<td><strong>PCA</strong></td>
+<td>-</td>
+<td><strong>-14.78</strong></td>
+<td><strong>-4.77</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>ICA</td>
+<td>14.78</td>
+<td>-</td>
+<td>14.72</td>
+</tr>
+<tr>
+<td></td>
+<td>SPCA</td>
+<td>4.77</td>
+<td><strong>-14.72</strong></td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>Boosting</strong></td>
+<td>PCA</td>
+<td>-</td>
+<td><strong>-13.34</strong></td>
+<td>10.29</td>
+</tr>
+<tr>
+<td></td>
+<td>ICA</td>
+<td>13.34</td>
+<td>-</td>
+<td>15.84</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>SPCA</strong></td>
+<td><strong>-10.29</strong></td>
+<td><strong>-15.84</strong></td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>Elastic Net</strong></td>
+<td><strong>PCA</strong></td>
+<td>-</td>
+<td><strong>-5.83</strong></td>
+<td><strong>-9.02</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>ICA</td>
+<td>5.83</td>
+<td>-</td>
+<td>2.86</td>
+</tr>
+<tr>
+<td></td>
+<td>SPCA</td>
+<td>9.02</td>
+<td><strong>-2.86</strong></td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>In the study, we explored various methods, each favouring specific situations. We also considered <strong>mean model combinations</strong>. When comparing the R-squared values, we noticed a significant improvement by using model averaging. The best individual model, Elastic Net with Sparse PCA, had an R-squared of 0.45, which increased to 0.55 with model averaging. Although we didn&rsquo;t delve deeper into this approach due to scope limitations, it showed promise overall. The current approach used equal-weighted averages, but a more sophisticated method, such as <strong>Bayesian Model Averaging</strong>, could be considered for further exploration.</p>
+<p>Top 15 best combinations:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ts" data-lang="ts"><span style="display:flex;"><span><span style="color:#ff79c6">|</span>     <span style="color:#ff79c6">|</span>   ar <span style="color:#ff79c6">|</span>   ols_pca <span style="color:#ff79c6">|</span>   ols_ica <span style="color:#ff79c6">|</span>   ols_spca <span style="color:#ff79c6">|</span>   boost_pca <span style="color:#ff79c6">|</span>   boost_ica <span style="color:#ff79c6">|</span>   boost_spca <span style="color:#ff79c6">|</span>   en_pca <span style="color:#ff79c6">|</span>   en_ica <span style="color:#ff79c6">|</span>   en_spca <span style="color:#ff79c6">|</span>   R<span style="color:#ff79c6">-</span>squared <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|----:|-----:|----------:|----------:|-----------:|------------:|------------:|-------------:|---------:|---------:|----------:|------------:|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">1</span> <span style="color:#ff79c6">|</span>    x <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>            x <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.553855</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">2</span> <span style="color:#ff79c6">|</span>    x <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">|</span>           x <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>            x <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.513298</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">3</span> <span style="color:#ff79c6">|</span>    x <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">|</span>           x <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>              <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.484593</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">4</span> <span style="color:#ff79c6">|</span>      <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>            x <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.452553</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">5</span> <span style="color:#ff79c6">|</span>    x <span style="color:#ff79c6">|</span>         x <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">|</span>           x <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>            x <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.446948</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">6</span> <span style="color:#ff79c6">|</span>    x <span style="color:#ff79c6">|</span>         x <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>            x <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.446442</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">7</span> <span style="color:#ff79c6">|</span>    x <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>          x <span style="color:#ff79c6">|</span>           x <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>            x <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.439009</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">8</span> <span style="color:#ff79c6">|</span>      <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">|</span>           x <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>            x <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.430777</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">9</span> <span style="color:#ff79c6">|</span>    x <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>          x <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>            x <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.422198</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span> <span style="color:#bd93f9">10</span> <span style="color:#ff79c6">|</span>    x <span style="color:#ff79c6">|</span>         x <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">|</span>           x <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>              <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.39741</span>  <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span> <span style="color:#bd93f9">11</span> <span style="color:#ff79c6">|</span>    x <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">|</span>           x <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>            x <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.397107</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span> <span style="color:#bd93f9">12</span> <span style="color:#ff79c6">|</span>    x <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>          x <span style="color:#ff79c6">|</span>           x <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>              <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.386882</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span> <span style="color:#bd93f9">13</span> <span style="color:#ff79c6">|</span>    x <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">|</span>           x <span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>            x <span style="color:#ff79c6">|</span>        x <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.386452</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span> <span style="color:#bd93f9">14</span> <span style="color:#ff79c6">|</span>    x <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">|</span>           x <span style="color:#ff79c6">|</span>           x <span style="color:#ff79c6">|</span>            x <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.383926</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span> <span style="color:#bd93f9">15</span> <span style="color:#ff79c6">|</span>    x <span style="color:#ff79c6">|</span>         x <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">|</span>           x <span style="color:#ff79c6">|</span>           x <span style="color:#ff79c6">|</span>            x <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>          <span style="color:#ff79c6">|</span>           <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.381716</span> <span style="color:#ff79c6">|</span>
+</span></span></code></pre></div><h2 id="conclusion">Conclusion</h2>
+<p>Both Boosting and Elastic Net showed significant performance improvements when compared
+to traditional principal component regression (PCR), with a preference for Boosting. However,
+despite its seemingly overall inferior explanatory power, PCR (OLS) still frequently produces the
+most-accurate predictions. For this reason, machine learning methods are suggested to not entirely
+replace traditional factor models, but to be regarded as promising case-dependent alternatives. A
+related finding supporting this “case-dependency”, is the fact that models displayed “clustered”
+periods in which they outperformed the alternatives, hinting at periods in which certain conditions
+favored certain models (Figure 3). In general, machine learning models were found to be more
+useful for data sets with weaker trends and volatility</p>
+
+
+                
+
+                
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/2021_rnn_sentiment_classifier/" data-toggle="tooltip" data-placement="top" title="Sentiment Classification: Movie Reviews">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/post/2021_lsh_duplicate_detection/" data-toggle="tooltip" data-placement="top" title="Scalable Duplicate Detection &amp; Text Analysis: Ecommerce Products">Next
+                            Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+                
+
+                
+
+
+
+            </div>
+
+            
+            
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+            
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/classification" title="classification">
+                            classification
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/clustering" title="clustering">
+                            clustering
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/data-science" title="data-science">
+                            data-science
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/dimension-reduction" title="dimension-reduction">
+                            dimension-reduction
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/econometrics" title="econometrics">
+                            econometrics
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/forecasting" title="forecasting">
+                            forecasting
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/industry" title="industry">
+                            industry
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/machine-learning" title="machine-learning">
+                            machine-learning
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/text-analysis" title="text-analysis">
+                            text-analysis
+                        </a>
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">                  
+                    
+                    <li>
+                        <a href="mailto:richie.lee@live.nl">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		           
+                    
+                    
+                    
+                    
+
+		            
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/Richie-Lee">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		            
+                    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/leerichie/">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		           
+                    
+                    
+                    
+                    
+                    
+                    
+            
+            
+            <li>
+                <a target="_blank" href="https://www.instagram.com/richie_lee_/">
+                    <span class="fa-stack fa-lg">
+                        <i class="fas fa-circle fa-stack-2x"></i>
+                        <i class="fab fa-instagram fa-stack-1x fa-inverse"></i>
+                    </span>
+                </a>
+            </li>
+            
+            
+           
+                   <li>
+                       <a href='' rel="alternate" type="application/rss+xml" title="Richie Lee" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fas fa-circle fa-stack-2x"></i>
+                               <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+            
+             </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Richie Lee 2023
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function loadAsync(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        loadAsync("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    loadAsync("https://cdn.jsdelivr.net/npm/fastclick@1.0.6/lib/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+
+
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        
+        
+        
+        
+            _containerSelector = 'div.post-container'
+        
+
+        
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        
+        $(selector).html('')
+
+        
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    
+
+
+    loadAsync("\/js\/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Richie Lee">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="/img/2021_duplicate_lsh/E-commerce.png">
+    <meta property="twitter:image" content="/img/2021_duplicate_lsh/E-commerce.png" />
+    
+
+    
+    <meta name="title" content="Scalable Duplicate Detection &amp; Text Analysis: Ecommerce Products" />
+    <meta property="og:title" content="Scalable Duplicate Detection &amp; Text Analysis: Ecommerce Products" />
+    <meta property="twitter:title" content="Scalable Duplicate Detection &amp; Text Analysis: Ecommerce Products" />
+    
+
+    
+    <meta name="description" content="This article explores the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques.">
+    <meta property="og:description" content="This article explores the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques." />
+    <meta property="twitter:description" content="This article explores the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques." />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="Microservice, Deep Learning">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Scalable Duplicate Detection &amp; Text Analysis: Ecommerce Products | Personal Webpage</title>
+
+    <link rel="canonical" href="/post/2021_lsh_duplicate_detection/">
+
+    
+    
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link rel="stylesheet" href="/css/font-awesome.all.min.css">
+
+    
+    
+
+    
+    <script src="/js/jquery.min.js"></script>
+
+    
+    <script src="/js/bootstrap.min.js"></script>
+
+    
+    <script src="/js/hux-blog.min.js"></script>
+
+    
+    <script src="/js/lazysizes.min.js"></script>
+
+    
+    
+
+</head>
+
+
+
+
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Richie Lee</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">All Posts</a>
+                    </li>
+                    
+                        
+                        <li>
+                            <a href="/categories/projects/">projects</a>
+                        </li>
+                        
+                    
+                    
+		    
+                        <li><a href="/about//">ABOUT</a></li>
+                    
+		            <li>
+                        <a href="/search"><i class="fa fa-search"></i></a>
+		           </li>
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('/img/2021_duplicate_lsh/E-commerce.png')
+    }
+</style>
+
+<header class="intro-header" >
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/computer-science" title="Computer Science">
+                            Computer Science
+                        </a>
+                        
+                        <a class="tag" href="/tags/data-science" title="Data Science">
+                            Data Science
+                        </a>
+                        
+                        <a class="tag" href="/tags/classification" title="Classification">
+                            Classification
+                        </a>
+                        
+                        <a class="tag" href="/tags/clustering" title="Clustering">
+                            Clustering
+                        </a>
+                        
+                        <a class="tag" href="/tags/text-analysis" title="Text analysis">
+                            Text analysis
+                        </a>
+                        
+                        <a class="tag" href="/tags/dimension-reduction" title="Dimension Reduction">
+                            Dimension Reduction
+                        </a>
+                        
+                    </div>
+                    <h1>Scalable Duplicate Detection &amp; Text Analysis: Ecommerce Products</h1>
+                    <h2 class="subheading">Sentiment Classification with Recurrent Neural Networks</h2>
+                    <span class="meta">
+                        
+                            Posted by 
+                            
+                                Richie
+                             
+                            on 
+                            Tuesday, December 21, 2021
+                            
+                            
+                            
+                            
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <h2 id="tldr">TL:DR</h2>
+<p><em>This article explore the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques.</em></p>
+<p><em>The overall approach is summarised in the following diagram:</em>
+[insert big overview]</p>
+<hr>
+<h2 id="context">Context</h2>
+<p>With the ever increasing relevance of online shopping and customers are becoming more comfortable with online platforms with user experience therefore playing a crucial role in driving sales and preventing churn. This posts concentrates on a vital yet often neglected aspect in this domain: product duplicate detection. Our focus is on delving into two significant challenges related to duplicate detection, crucial for data scientists to comprehend.</p>
+<ol>
+<li>
+<p><strong>Scalability</strong>: In order to efficiently manage vast amounts of product data, it becomes crucial to effectively identify potential duplicate pairs, ensuring computational feasibility. A straightforward approach of comparing all pairs would require n(n-1)/2 comparisons, which is impractical given the immense scale of webshop data in the big data landscape.</p>
+</li>
+<li>
+<p><strong>Classification of Duplicates</strong>: Identifying exact duplicates may be straightforward, but dealing with partial duplicates presents a significant challenge. This requires incorporating multiple sources of information and assigning varying degrees of importance to specific metrics to ensure robustness in distinguishing very similar but distinct products (e.g., &ldquo;iPhone 10&rdquo; &amp; &ldquo;iPhone 11&rdquo;).</p>
+</li>
+</ol>
+<h2 id="data">Data</h2>
+<p>The dataset comprises of 1624 products (tv&rsquo;s), scraped from various webshops, each represented in JSON format with details such as <em>title</em>, <em>features</em> (7075 unique ones), <em>URL</em>, <em>store</em>, and <em>model ID</em>. The model ID acts as the unique identifier for true duplicates. Within the dataset, there are 399 sets of duplicates, including pairs and even triplets, resulting in a total of 691 non-unique items.</p>
+<p>An example of an observation would for instance look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">&#34;shop&#34;</span>: <span style="color:#f1fa8c">&#34;amazon.com&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">&#34;url&#34;</span>: <span style="color:#f1fa8c">&#34;http://www.amazon.com/Samsung-PN60E8000-60-Inch-1080p-Plasma/dp/B0077TF65G/ref=sr_1_58/181-0262008-3157419?ie=UTF8&amp;qid=1379502006&amp;s=electronics&amp;sr=1-58&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">&#34;modelID&#34;</span>: <span style="color:#f1fa8c">&#34;PN60E8000&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">&#34;featuresMap&#34;</span>: {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">&#34;Date first available at Amazon.com&#34;</span>: <span style="color:#f1fa8c">&#34;February 10, 2012&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">&#34;Product Dimensions:&#34;</span>: <span style="color:#f1fa8c">&#34;58.5 x 17 x 37.5 inches ; 68.8 pounds&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">&#34;Display Technology&#34;</span>: <span style="color:#f1fa8c">&#34;PLASMA&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">&#34;Display Size&#34;</span>: <span style="color:#f1fa8c">&#34;60 inches&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">&#34;Shipping:&#34;</span>: <span style="color:#f1fa8c">&#34;Currently, item can be shipped only within the U.S.&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">&#34;Brand Name&#34;</span>: <span style="color:#f1fa8c">&#34;Samsung&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">&#34;Image Aspect Ratio&#34;</span>: <span style="color:#f1fa8c">&#34;16:09&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">&#34;ASIN:&#34;</span>: <span style="color:#f1fa8c">&#34;B0077TF65G&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">&#34;Shipping Weight&#34;</span>: <span style="color:#f1fa8c">&#34;89 pounds (&#34;</span>
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">&#34;title&#34;</span>: <span style="color:#f1fa8c">&#34;Samsung PN60E8000 60-Inch 1080p 600Hz Ultra Slim Plasma 3D HDTV (Black) (2012 Model)&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="preproccesing-step-1-compressing-and-extracting-relevant-information">Preproccesing step 1: Compressing and extracting relevant information</h3>
+<p>First, we store the <strong>titles</strong>, <strong>duplicate pairs (labels)</strong>, and <strong>feature key-value pairs</strong> for all products. However, for candidate pair selection (LSH), we will only utilize the titles.</p>
+<p>The titles undergo a cleaning process that involves removing uninformative symbols such as parentheses, hyphens, quotes, slashes, commas, and brackets. Next, the titles are split into substrings consisting of stand-alone words, excluding single-letter strings. These substrings, called <strong>shingles</strong> (similar to <strong>Tokenisation</strong> in NLP), serve as product characteristics. We collect all distinct shingles and assign each one a unique integer index as an identifier. This allows us to represent every product&rsquo;s title as a vector of integers.</p>
+<p>For example: The title <em>&ldquo;Samsung PN60E8000 60-Inch 1080p 600Hz Ultra Slim Plasma 3D HDTV (Black) (2012 Model)&rdquo;</em> yields the following shingles:</p>
+<ul>
+<li>Samsung</li>
+<li>PN60E8000</li>
+<li>60-Inch</li>
+<li>1080p</li>
+<li>&hellip;</li>
+</ul>
+<p>To reduce the computational burden (by a lot!), we convert these vectors into <strong>sparse vectors</strong> that only store the indices of present shingles. By collecting all shingle sparse vectors, we construct a <strong>Sparse Matrix (S)</strong>.</p>
+<p>To approximate similarity between products, we shuffle the list of shingle indices and iterate over the shuffled vector. For each iteration, we check whether the index is present in the current product&rsquo;s sparse vector. Once we find a match, we save the number of iterations required to find the first match. This process is repeated for every product, resulting in a collection of permutations known as the <strong>Signature Matrix</strong>. It serves as a compact representation of all product titles.</p>
+<h3 id="preprocessing-step-2-identifying-and-bucketing-candidate-pairs">Preprocessing step 2: Identifying and bucketing candidate pairs</h3>
+<p>If multiple products share the same iteration value for a given permutation, it indicates that they have a common shingle. We leverage this information by distributing products into <strong>buckets</strong> based on their respective iteration values. Products with common shingles are assigned to the same bucket.</p>
+<p>We then restructure the bucket information into a <strong>Similarity Matrix</strong>. In this matrix, entries (i, j) are set to 1 if products i and j share the same bucket, and 0 otherwise.</p>
+<p>This <strong>LSH (Locality-Sensitivity Hashing)</strong> process is repeated a specified number of times (n_perm) and the similarity matrices are summed. Higher values in the summed similarity matrix correspond to a higher frequency of common buckets among products, indicating greater similarity in titles. We select candidate pairs by applying a <strong>Tuned Frequency</strong> threshold, which minimizes the number of necessary candidate pairs while ensuring an acceptable number of true duplicate pairs are not discarded. The threshold is chosen by solving the following optimization problem:</p>
+<pre tabindex="0"><code>Minimize |CP(f*)| subject to |TP ∉ CP(f*)| ≤ a, where f ∈ {0, ..., n_perm}
+</code></pre><p>Here, |CP(f)| denotes the cardinality (number of pairs) of candidate pairs, and |TP ∉ CP(f)| represents the number of true duplicate pairs that are not in the candidate pairs set. The constant &lsquo;a&rsquo; represents the acceptable number of discarded true duplicate pairs.</p>
+<p>The LSH steps conclude with the selection of <strong>candidate pairs</strong> using the tuned frequency threshold f*.</p>
+<h2 id="classification">Classification</h2>
+<p>In addition to using title information, our classification process incorporates feature data. We extend the list of product characteristics from shingles to <strong>Shingles and Features</strong>. The features are stored as key-value pairs to preserve their interpretation. This extended list is used to construct a new <strong>Sparse Matrix (S + F)</strong>.</p>
+<p>All selected candidate pairs are compared using <strong>Jaccard similarity</strong> of the sparse vectors. Jaccard similarity is calculated by dividing the number of matching elements in the sparse vectors by the total number of distinct elements in both vectors combined. This can be expressed as:</p>
+<pre tabindex="0"><code>JS(pᵢ, pⱼ) = |(pᵢ ∩ pⱼ)| / |(pᵢ ∪ pⱼ)|
+</code></pre><p>Here, pₖ represents the set of sparse vector elements for product k.</p>
+<p>Consequently, a <strong>Jaccard similarity threshold</strong> (Tⱼₛ) is tuned to classify pairs as duplicates or distinct. If the Jaccard similarity (JS) between products pᵢ and pⱼ is greater than or equal to Tⱼₛ, they are classified as duplicates; otherwise, they are considered distinct. We can optimize Tⱼₛ for various performance measures, with this implementation, we optimise for the <strong>F1-measure</strong>.</p>
+<h2 id="results">Results</h2>
+<p>To evaluate the performance of the algorithm, we employ a training-test data split using a <strong>bootstrapping</strong> technique. The training dataset is obtained by randomly sampling products with replacement, while the remainder is used for testing. When a product is sampled multiple times, all but one copy are removed. The number of training iterations is set to 1000.</p>
+<h3 id="scalability-performance">Scalability performance</h3>
+<p>To evaluate the scalability of the algorithm, all computations were executed using (nested) lists. <strong>Additionally, the usage of sparse matrices over boolean matrices reduced the order of the dimensions of matrix sizes from 10^5 to less than 10^2</strong>. As the number of products increased, there was no concerning increase in computing time observed, as the less demanding calculations of the algorithm were affected more. On average, a single bootstrap iteration of the algorithm (including tuning) required approximately 3 minutes for the full dataset.</p>
+<h3 id="classification-performance">Classification Performance</h3>
+<p>The performance of the algorithm was evaluated using bootstrap testing sets. The performance metrics for both the candidate pair selection (LSH) and the classification (Jaccard similarity) were considered. Figure 1 shows the results for three performance metrics at various levels of the fraction of comparisons, which is defined as the fraction of the total number of candidate pairs (selected using LSH) among the total number of possible pairs. Additionally, accuracy measures of the Jaccard classification algorithm are displayed.</p>
+<p>[insert 4 graphs]</p>
+<p><strong>Figure 1: Performance measures for LSH and Jaccard classification</strong></p>
+<p>After evaluating the performance metrics, the following conclusions can be drawn:</p>
+<ol>
+<li>
+<p><strong>Pair completeness (recall)</strong>: <em>This metric measures the fraction of the number of correctly detected duplicates among the total number of duplicate classifications.</em>
+→ The results show that the recall remains high even with substantial reductions in the number of candidate pairs, indicating that duplicates are adequately preserved.</p>
+</li>
+<li>
+<p><strong>Pair quality (precision)</strong>: <em>Precision measures the number of correctly detected duplicates out of the total number of duplicates present.</em> → The precision values are low overall, which could be due to a low number of duplicate pairs relative to the total number of possible pairs or the insufficient use of product information in the LSH classification criteria. Including additional features in the classification process could potentially improve precision.</p>
+</li>
+<li>
+<p><strong>F1-measure (LSH)</strong>: <em>This measures the balance between pair quality and completeness</em>. → Here it&rsquo;s mainly driven by poor pair quality. Minimizing false positives (distinct products classified as duplicates) is considered the main challenge for this LSH implementation.</p>
+</li>
+<li>
+<p><strong>F1-measure (Jaccard)</strong>: → The F1-measure for Jaccard similarity shows that the best classification performance is achieved for low Jaccard similarity thresholds (Tⱼₛ = 0), suggesting redundancy in the entire classification part of the algorithm.</p>
+</li>
+</ol>
+<h2 id="conclusion">Conclusion</h2>
+<p>In conclusion, though the duplicate detection framework appears to scale well, we find it incompatible with the dataset due to its poor performance in both candidate selection and correct classification. The main challenge that hindered performance was the fact that text similarity was insufficient to determine matches. In order to improve performance, we could either improve input data quality or rely more on more directly informative (latent) characteristics.</p>
+<h3 id="discussion">Discussion</h3>
+<p>The unsuccessful candidate selection was a result of poor pair quality (precision), which we hypothesize to be related to the imbalanced dataset (0.03% duplicate) or due to an insufficient amount of product information used during LSH. The classification showed superior performance for notably low Jaccard-similarity thresholds, giving rise to the idea of investigating Jaccard similarity distributions:</p>
+<p>[insert distributions]</p>
+<p>Though it may be intuitive that duplicates would share a near-perfect level of (Jaccard) similarity, the above figure rejects this assumption convincingly. Therefore, pursuing high product similarity through Jaccard-similarity maximization is concluded to be ineffective. As a (partial) solution, we could look into alternative criteria to represent product information or methods of reducing noise in the product information.</p>
+<p>Additionally, we also observe a negative bias in terms of Jaccard similarity distributions for the LSH candidate pairs. This implies that, on average, the candidate pairs are significantly less similar than true duplicates, whereas ideally, these distributions would be the same. Therefore, increasing the strictness on candidate pair selection (shifting the distribution to the right) could be helpful.</p>
+
+
+                
+
+                
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/2021_factor_ml_forecasting/" data-toggle="tooltip" data-placement="top" title="PCA Machine Learning Hybrid Models: Real Estate Forecasting">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/post/2022_heterogeneity_ah/" data-toggle="tooltip" data-placement="top" title="Modelling Unobserved Heterogeneity: Albert Heijn (Ahold Delhaize)">Next
+                            Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+                
+
+                
+
+
+
+            </div>
+
+            
+            
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+            
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/classification" title="classification">
+                            classification
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/clustering" title="clustering">
+                            clustering
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/data-science" title="data-science">
+                            data-science
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/dimension-reduction" title="dimension-reduction">
+                            dimension-reduction
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/econometrics" title="econometrics">
+                            econometrics
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/forecasting" title="forecasting">
+                            forecasting
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/industry" title="industry">
+                            industry
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/machine-learning" title="machine-learning">
+                            machine-learning
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/text-analysis" title="text-analysis">
+                            text-analysis
+                        </a>
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">                  
+                    
+                    <li>
+                        <a href="mailto:richie.lee@live.nl">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		           
+                    
+                    
+                    
+                    
+
+		            
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/Richie-Lee">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		            
+                    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/leerichie/">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		           
+                    
+                    
+                    
+                    
+                    
+                    
+            
+            
+            <li>
+                <a target="_blank" href="https://www.instagram.com/richie_lee_/">
+                    <span class="fa-stack fa-lg">
+                        <i class="fas fa-circle fa-stack-2x"></i>
+                        <i class="fab fa-instagram fa-stack-1x fa-inverse"></i>
+                    </span>
+                </a>
+            </li>
+            
+            
+           
+                   <li>
+                       <a href='' rel="alternate" type="application/rss+xml" title="Richie Lee" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fas fa-circle fa-stack-2x"></i>
+                               <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+            
+             </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Richie Lee 2023
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function loadAsync(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        loadAsync("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    loadAsync("https://cdn.jsdelivr.net/npm/fastclick@1.0.6/lib/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+
+
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        
+        
+        
+        
+            _containerSelector = 'div.post-container'
+        
+
+        
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        
+        $(selector).html('')
+
+        
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    
+
+
+    loadAsync("\/js\/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+
+
+
+</body>
+</html>

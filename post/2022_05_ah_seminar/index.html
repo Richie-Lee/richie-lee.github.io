@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Richie Lee">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="/img/2022_AH_Seminar/AH Seminar - Supermarket Aisle.png">
+    <meta property="twitter:image" content="/img/2022_AH_Seminar/AH Seminar - Supermarket Aisle.png" />
+    
+
+    
+    <meta name="title" content="Modelling Unobserved Heterogeneity: Albert Heijn (Ahold Delhaize)" />
+    <meta property="og:title" content="Modelling Unobserved Heterogeneity: Albert Heijn (Ahold Delhaize)" />
+    <meta property="twitter:title" content="Modelling Unobserved Heterogeneity: Albert Heijn (Ahold Delhaize)" />
+    
+
+    
+    <meta name="description" content="In collaboration with Albert Heijn (Supermarket), this study explores the dynamics between product labels and consumer buying behaviour. The study successfully addressed the challenges posed by panel data, such as unobserved heterogeneity, omitted variable bias, and seasonality, demonstrating the usefulness of the Micro-Econometric repertoire. The positive reception of the findings and methodologies led to an invitation to present the results at Albert Heijn&#39;s Data Science department&#39;s Knowledge Exchange initiative.">
+    <meta property="og:description" content="In collaboration with Albert Heijn (Supermarket), this study explores the dynamics between product labels and consumer buying behaviour. The study successfully addressed the challenges posed by panel data, such as unobserved heterogeneity, omitted variable bias, and seasonality, demonstrating the usefulness of the Micro-Econometric repertoire. The positive reception of the findings and methodologies led to an invitation to present the results at Albert Heijn&#39;s Data Science department&#39;s Knowledge Exchange initiative." />
+    <meta property="twitter:description" content="In collaboration with Albert Heijn (Supermarket), this study explores the dynamics between product labels and consumer buying behaviour. The study successfully addressed the challenges posed by panel data, such as unobserved heterogeneity, omitted variable bias, and seasonality, demonstrating the usefulness of the Micro-Econometric repertoire. The positive reception of the findings and methodologies led to an invitation to present the results at Albert Heijn&#39;s Data Science department&#39;s Knowledge Exchange initiative." />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="Microservice, Deep Learning">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Modelling Unobserved Heterogeneity: Albert Heijn (Ahold Delhaize) | Personal Webpage</title>
+
+    <link rel="canonical" href="/post/2022_05_ah_seminar/">
+
+    
+    
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link rel="stylesheet" href="/css/font-awesome.all.min.css">
+
+    
+    
+
+    
+    <script src="/js/jquery.min.js"></script>
+
+    
+    <script src="/js/bootstrap.min.js"></script>
+
+    
+    <script src="/js/hux-blog.min.js"></script>
+
+    
+    <script src="/js/lazysizes.min.js"></script>
+
+    
+    
+
+</head>
+
+
+
+
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Richie Lee</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">All Posts</a>
+                    </li>
+                    
+                        
+                        <li>
+                            <a href="/categories/projects/">projects</a>
+                        </li>
+                        
+                    
+                    
+		    
+                        <li><a href="/about//">ABOUT</a></li>
+                    
+		            <li>
+                        <a href="/search"><i class="fa fa-search"></i></a>
+		           </li>
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('/img/2022_AH_Seminar/AH%20Seminar%20-%20Supermarket%20Aisle.png')
+    }
+</style>
+
+<header class="intro-header" >
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/econometrics" title="Econometrics">
+                            Econometrics
+                        </a>
+                        
+                        <a class="tag" href="/tags/industry" title="Industry">
+                            Industry
+                        </a>
+                        
+                        <a class="tag" href="/tags/clustering" title="Clustering">
+                            Clustering
+                        </a>
+                        
+                        <a class="tag" href="/tags/outlier-detection" title="Outlier Detection">
+                            Outlier Detection
+                        </a>
+                        
+                        <a class="tag" href="/tags/panel-data" title="Panel Data">
+                            Panel Data
+                        </a>
+                        
+                        <a class="tag" href="/tags/regression" title="Regression">
+                            Regression
+                        </a>
+                        
+                        <a class="tag" href="/tags/forecasting" title="Forecasting">
+                            Forecasting
+                        </a>
+                        
+                        <a class="tag" href="/tags/data-science" title="Data Science">
+                            Data Science
+                        </a>
+                        
+                    </div>
+                    <h1>Modelling Unobserved Heterogeneity: Albert Heijn (Ahold Delhaize)</h1>
+                    <h2 class="subheading">Data Science Research Collaboration</h2>
+                    <span class="meta">
+                        
+                            Posted by 
+                            
+                                Richie (contributor)
+                             
+                            on 
+                            Sunday, May 15, 2022
+                            
+                            
+                            
+                            
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <h2 id="tldr">TL:DR</h2>
+<p><em>In collaboration with Albert Heijn, this study explores the dynamics between product labels and consumer buying behaviour. The study successfully addressed the challenges posed by panel data, such as unobserved heterogeneity, omitted variable bias, and seasonality, demonstrating the usefulness of the micro-econometric toolkit.</em></p>
+<p><em>The positive reception of the findings and methodologies led to an invitation to present the results at Albert Heijn&rsquo;s Data Science department&rsquo;s Knowledge Exchange initiative.</em></p>
+<hr>
+<h2 id="context">Context</h2>
+<p>In the competitive landscape of the supermarket industry, understanding consumer behaviour is crucial for Dutch market leader <a href="https://www.linkedin.com/company/albert-heijn/">Albert Heijn</a> (<a href="https://www.linkedin.com/company/ahold-delhaize/">Ahold Delhaize</a>) in developing effective strategies to improve revenue and profitability. This project specifically focuses on measuring the impacts of product labels on consumer buying behaviour.</p>
+<h2 id="data">Data</h2>
+<p>The analysis in this post is based on a panel dataset that spans a time horizon of approximately 2 years, with monthly observations (approximately 24 data points). The dataset consists of information on 118 unique products, including units sold (proportion of total sales), prices, product categories (<em>Dairy</em>, <em>Fruits</em>, <em>Meat</em>, <em>Soda</em>), product attributes (e.g. <em>Vegetarian</em>, <em>Vegan</em>, <em>HighFiber</em>, <em>Plantbased</em>, <em>LowSugar</em>) and corresponding weights/units. Moreover, to account for seasonal variations, we include seasonal dummy variables in our analysis.</p>
+<p>Example:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ts" data-lang="ts"><span style="display:flex;"><span><span style="color:#ff79c6">|</span>    <span style="color:#ff79c6">|</span> Brand <span style="color:#ff79c6">|</span> ItemDescr                  <span style="color:#ff79c6">|</span> Content <span style="color:#ff79c6">|</span> UOM <span style="color:#ff79c6">|</span> StandardWeight <span style="color:#ff79c6">|</span> PackagingType <span style="color:#ff79c6">|</span> Category                     <span style="color:#ff79c6">|</span> Biologisch <span style="color:#ff79c6">|</span> PrivateLabelInd <span style="color:#ff79c6">|</span> Low_fat <span style="color:#ff79c6">|</span> Low_Salt <span style="color:#ff79c6">|</span> Low_Sugar <span style="color:#ff79c6">|</span> Plant_based <span style="color:#ff79c6">|</span> Vegan <span style="color:#ff79c6">|</span> Vegetarian <span style="color:#ff79c6">|</span> ndLekkerUitNederland <span style="color:#ff79c6">|</span> ndHighInFiber <span style="color:#ff79c6">|</span> ndWholeGrain <span style="color:#ff79c6">|</span> Glutenvrij <span style="color:#ff79c6">|</span> ndSustainableProduced <span style="color:#ff79c6">|</span> Halal <span style="color:#ff79c6">|</span> QuarterKey <span style="color:#ff79c6">|</span> QuantityCE <span style="color:#ff79c6">|</span> SalesGoodsEUR <span style="color:#ff79c6">|</span> RetailItemPrice <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|---:|:------|:---------------------------|--------:|:----|--------------:|:--------------|:-----------------------------|:-----------|:----------------|:--------|:---------|:----------|:------------|:------|:----------|:----------------------|:--------------|:-------------|:-----------|:-----------------------|:------|-----------:|-----------:|--------------:|---------------:|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">0</span> <span style="color:#ff79c6">|</span> Fanta <span style="color:#ff79c6">|</span> Fanta orange bl <span style="color:#bd93f9">0.33</span> liter <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.33</span> <span style="color:#ff79c6">|</span> LT  <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">NaN</span> <span style="color:#ff79c6">|</span> blik          <span style="color:#ff79c6">|</span> Frisdranken en Houdbaar Sap <span style="color:#ff79c6">|</span> False      <span style="color:#ff79c6">|</span> False           <span style="color:#ff79c6">|</span> False   <span style="color:#ff79c6">|</span> False    <span style="color:#ff79c6">|</span> False     <span style="color:#ff79c6">|</span> False       <span style="color:#ff79c6">|</span> False  <span style="color:#ff79c6">|</span> False     <span style="color:#ff79c6">|</span> False                 <span style="color:#ff79c6">|</span> False         <span style="color:#ff79c6">|</span> False        <span style="color:#ff79c6">|</span> False      <span style="color:#ff79c6">|</span> False                  <span style="color:#ff79c6">|</span> False <span style="color:#ff79c6">|</span>     <span style="color:#bd93f9">201801</span> <span style="color:#ff79c6">|</span>   <span style="color:#bd93f9">0.0526169</span> <span style="color:#ff79c6">|</span>     <span style="color:#bd93f9">0.0262161</span> <span style="color:#ff79c6">|</span>            <span style="color:#bd93f9">0.63</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">1</span> <span style="color:#ff79c6">|</span> Fanta <span style="color:#ff79c6">|</span> Fanta orange bl <span style="color:#bd93f9">0.33</span> liter <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.33</span> <span style="color:#ff79c6">|</span> LT  <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">NaN</span> <span style="color:#ff79c6">|</span> blik          <span style="color:#ff79c6">|</span> Frisdranken en Houdbaar Sap <span style="color:#ff79c6">|</span> False      <span style="color:#ff79c6">|</span> False           <span style="color:#ff79c6">|</span> False   <span style="color:#ff79c6">|</span> False    <span style="color:#ff79c6">|</span> False     <span style="color:#ff79c6">|</span> False       <span style="color:#ff79c6">|</span> False  <span style="color:#ff79c6">|</span> False     <span style="color:#ff79c6">|</span> False                 <span style="color:#ff79c6">|</span> False         <span style="color:#ff79c6">|</span> False        <span style="color:#ff79c6">|</span> False      <span style="color:#ff79c6">|</span> False                  <span style="color:#ff79c6">|</span> False <span style="color:#ff79c6">|</span>     <span style="color:#bd93f9">201802</span> <span style="color:#ff79c6">|</span>   <span style="color:#bd93f9">0.0592813</span> <span style="color:#ff79c6">|</span>     <span style="color:#bd93f9">0.0283729</span> <span style="color:#ff79c6">|</span>            <span style="color:#bd93f9">0.63</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">2</span> <span style="color:#ff79c6">|</span> Fanta <span style="color:#ff79c6">|</span> Fanta orange bl <span style="color:#bd93f9">0.33</span> liter <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.33</span> <span style="color:#ff79c6">|</span> LT  <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">NaN</span> <span style="color:#ff79c6">|</span> blik          <span style="color:#ff79c6">|</span> Frisdranken en Houdbaar Sap <span style="color:#ff79c6">|</span> False      <span style="color:#ff79c6">|</span> False           <span style="color:#ff79c6">|</span> False   <span style="color:#ff79c6">|</span> False    <span style="color:#ff79c6">|</span> False     <span style="color:#ff79c6">|</span> False       <span style="color:#ff79c6">|</span> False  <span style="color:#ff79c6">|</span> False     <span style="color:#ff79c6">|</span> False                 <span style="color:#ff79c6">|</span> False         <span style="color:#ff79c6">|</span> False        <span style="color:#ff79c6">|</span> False      <span style="color:#ff79c6">|</span> False                  <span style="color:#ff79c6">|</span> False <span style="color:#ff79c6">|</span>     <span style="color:#bd93f9">201803</span> <span style="color:#ff79c6">|</span>   <span style="color:#bd93f9">0.0475494</span> <span style="color:#ff79c6">|</span>     <span style="color:#bd93f9">0.0243586</span> <span style="color:#ff79c6">|</span>            <span style="color:#bd93f9">0.63</span> <span style="color:#ff79c6">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">|</span>  <span style="color:#bd93f9">3</span> <span style="color:#ff79c6">|</span> Fanta <span style="color:#ff79c6">|</span> Fanta orange bl <span style="color:#bd93f9">0.33</span> liter <span style="color:#ff79c6">|</span>    <span style="color:#bd93f9">0.33</span> <span style="color:#ff79c6">|</span> LT  <span style="color:#ff79c6">|</span>            <span style="color:#ff79c6">NaN</span> <span style="color:#ff79c6">|</span> blik          <span style="color:#ff79c6">|</span> Frisdranken en Houdbaar Sap <span style="color:#ff79c6">|</span> False      <span style="color:#ff79c6">|</span> False           <span style="color:#ff79c6">|</span> False   <span style="color:#ff79c6">|</span> False    <span style="color:#ff79c6">|</span> False     <span style="color:#ff79c6">|</span> False       <span style="color:#ff79c6">|</span> False  <span style="color:#ff79c6">|</span> False     <span style="color:#ff79c6">|</span> False                 <span style="color:#ff79c6">|</span> False         <span style="color:#ff79c6">|</span> False        <span style="color:#ff79c6">|</span> False      <span style="color:#ff79c6">|</span> False                  <span style="color:#ff79c6">|</span> False <span style="color:#ff79c6">|</span>     <span style="color:#bd93f9">201804</span> <span style="color:#ff79c6">|</span>   <span style="color:#bd93f9">0.0564791</span> <span style="color:#ff79c6">|</span>     <span style="color:#bd93f9">0.0266016</span> <span style="color:#ff79c6">|</span>            <span style="color:#bd93f9">0.62</span> <span style="color:#ff79c6">|</span>
+</span></span></code></pre></div><p>Prior to conducting the analysis, the dataset underwent several preprocessing steps to ensure data quality and consistency:</p>
+<ol>
+<li><strong>Handling Missing Values:</strong> Missing values were addressed through appropriate imputation techniques to avoid any biases in the analysis.</li>
+<li><strong>Weight/Unit Correction:</strong> To standardize the data and enable meaningful comparisons, weight or unit inconsistencies (e.g.  <em>kg</em>, <em>lbs</em>, <em>unit</em>) were corrected to ensure consistency across products.</li>
+<li><strong>Multicollinearity:</strong> To prevent performance breakdown and identification problems caused by collinearity amongst variables (e.g. through the vegan/vegetarian categories), some covariates are merged.</li>
+</ol>
+<p>
+  <img src="/img/2022_AH_Seminar/AH_Seminar_correlations_attributes.png" alt="Caption for Image 1">
+
+</p>
+<ol start="4">
+<li><strong>Outlier Detection:</strong> Visual inspection through boxplots &amp; UpSet plots.
+
+  <img src="/img/2022_AH_Seminar/AH_Seminar_boxplot_outliers.png" alt="Caption for Image 2">
+
+
+
+  <img src="/img/2022_AH_Seminar/AH_Seminar_correlations_attributes.png" alt="Caption for Image 3">
+
+</li>
+</ol>
+<h2 id="model-selection">Model selection</h2>
+<p>To account for unobserved heterogeneity and omitted variable biases, we employ methods from the field of Micro-econometrics:</p>
+<p><strong>OLS (Baseline)</strong></p>
+<ul>
+<li>Advantages: Simple, Parsimonious</li>
+<li>Disadvantages: Doesn&rsquo;t capture heterogeneity</li>
+</ul>
+<p><strong>Fixed Effects:</strong> control for unobserved individual-specific characteristics by including individual-specific dummy variables, allowing the coefficients to be estimated only from within-individual variation in the data.</p>
+<ul>
+<li>Advantages: Captures unobserved heterogeneity</li>
+<li>Disadvantages: No parameter estimation for non-time-varying variables</li>
+</ul>
+<p><strong>Random Effects:</strong> treat unobserved individual-specific characteristics as random variables, assuming they are uncorrelated with the observed predictors, and estimate the coefficients by incorporating both within-individual and between-individual variations in the data.</p>
+<ul>
+<li>Advantages: Parameter estimation for non-time-varying variables, captures individual variance</li>
+<li>Disadvantages: No individual effect estimation</li>
+</ul>
+<p><strong>Group Fixed Effects (Latent Class):</strong> extend fixed effect models to account for unobserved group-specific characteristics, effectively adding another set of dummy variables to control for group-level variation.</p>
+<ul>
+<li>Advantages: Segmentation, Captures Grouped Effects, Seasonality, Detects outliers</li>
+<li>Disadvantage: Normality Assumption, May not converge, Computationally heavy</li>
+</ul>
+<p>In addition, the following statistical tests can be used to validate the necessary assumptions for model selection:</p>
+<h2 id="results">Results</h2>
+<p>The analysis aimed to investigate the effect of product labels on sales in a supermarket across different categories. The findings reveal the following:</p>
+<ul>
+<li>Private label products had a positive effect on sales for Meat and Dairy goods but had a negative effect on sales for Soda and Fruit categories.</li>
+<li>Seasonal effects were only observed in the Soda category, with higher sales during the first quarter compared to subsequent months.</li>
+<li>Vegetarian labeling was found to be important for Fruit and Meat goods, consistent with the group fixed effects analysis.</li>
+<li>Low fat labeling positively impacted sales for Soda and Dairy products.</li>
+<li>Latent class analysis suggested broadening the range of meat brands and introducing more private branded products in the dairy category.</li>
+</ul>
+<p>Table 1 provides results by category:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Soda</th>
+<th>Fruit</th>
+<th>Meat</th>
+<th>Dairy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Intercept</td>
+<td>-9.14***</td>
+<td>-6.74***</td>
+<td>-8.35***</td>
+<td>-6.70***</td>
+</tr>
+<tr>
+<td>Biological</td>
+<td>-1.12</td>
+<td>-3.15***</td>
+<td>0.91</td>
+<td>0.95</td>
+</tr>
+<tr>
+<td>Sustainable</td>
+<td>2.83**</td>
+<td></td>
+<td>1.25**</td>
+<td>-0.19</td>
+</tr>
+<tr>
+<td>Low Fat</td>
+<td>5.73***</td>
+<td>2.84*</td>
+<td>-0.36</td>
+<td>1.63**</td>
+</tr>
+<tr>
+<td>Low Salt</td>
+<td></td>
+<td>-0.90</td>
+<td>0.43</td>
+<td>0.02</td>
+</tr>
+<tr>
+<td>Low Sugar</td>
+<td>-0.97</td>
+<td>-0.29</td>
+<td>-0.58</td>
+<td>0.94*</td>
+</tr>
+<tr>
+<td>Plantbased.Vegan</td>
+<td>0.45</td>
+<td>2.61***</td>
+<td>-4.65***</td>
+<td>0.64</td>
+</tr>
+<tr>
+<td>Vegetarian</td>
+<td>-0.43</td>
+<td>3.66***</td>
+<td>1.33</td>
+<td>-1.32*</td>
+</tr>
+<tr>
+<td>Local Product</td>
+<td></td>
+<td>-2.04</td>
+<td>0.55</td>
+<td>0.85</td>
+</tr>
+<tr>
+<td>Whole Grain</td>
+<td></td>
+<td></td>
+<td>0.97</td>
+<td>0.69</td>
+</tr>
+<tr>
+<td>High Fiber</td>
+<td></td>
+<td>-4.33***</td>
+<td>-6.27***</td>
+<td></td>
+</tr>
+<tr>
+<td>Gluten-free</td>
+<td></td>
+<td></td>
+<td>-0.40</td>
+<td>1.33</td>
+</tr>
+<tr>
+<td>Private Label</td>
+<td>-2.12</td>
+<td>-7.89***</td>
+<td>3.18***</td>
+<td>1.10**</td>
+</tr>
+<tr>
+<td>Price</td>
+<td>0.99</td>
+<td>1.82*</td>
+<td>0.58*</td>
+<td>1.12**</td>
+</tr>
+<tr>
+<td>Quarter 2</td>
+<td>-0.27**</td>
+<td>-0.09</td>
+<td>-0.24</td>
+<td>0.14*</td>
+</tr>
+<tr>
+<td>Quarter 3</td>
+<td>-0.68***</td>
+<td>0.08</td>
+<td>-0.16**</td>
+<td>0.05</td>
+</tr>
+<tr>
+<td>Quarter 4</td>
+<td>-0.74***</td>
+<td>-0.31</td>
+<td>-0.07</td>
+<td>-0.05</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>*** / ** / * indicates significance at the 1% / 5% / 10% level.</li>
+<li>other results are omitted for brevity</li>
+</ul>
+<h2 id="concluding-remarks">Concluding remarks</h2>
+<p>In summary, this project provided valuable insights into the influence of product attributes on sales within the supermarket industry. The results underscore the significance of considering the specific product categories and the need for effective segmentation strategies. The micro-econometric methods proved suitable for this study, as they accommodated the computational demands, panel data characteristics, and factors such as individual-specific effects, seasonality, and unobserved heterogeneity.</p>
+<p>When dealing with small sample, panel data and unobserved heterogeneity, these methods will hold promise for broader applications. If you are interested in applying similar techniques to your own work, I recommend referring to the guidelines outlined in the model selection section for a streamlined approach. Or alternatively, my inbox is always open for enaging discussions ;)</p>
+
+
+                
+
+                
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/2021_12_duplicate_detection_lsh/" data-toggle="tooltip" data-placement="top" title="Scalable Duplicate Detection &amp; Text Analysis: Ecommerce Products">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/post/bayesian_ab_testing/" data-toggle="tooltip" data-placement="top" title="Bayesian A/B Testing: JustEatTakeaway.com [MSc Thesis - WIP]">Next
+                            Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+                
+
+                
+
+
+
+            </div>
+
+            
+            
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+            
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/classification" title="classification">
+                            classification
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/clustering" title="clustering">
+                            clustering
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/data-science" title="data-science">
+                            data-science
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/dimension-reduction" title="dimension-reduction">
+                            dimension-reduction
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/econometrics" title="econometrics">
+                            econometrics
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/forecasting" title="forecasting">
+                            forecasting
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/industry" title="industry">
+                            industry
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/machine-learning" title="machine-learning">
+                            machine-learning
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/text-analysis" title="text-analysis">
+                            text-analysis
+                        </a>
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">                  
+                    
+                    <li>
+                        <a href="mailto:richie.lee@live.nl">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		           
+                    
+                    
+                    
+                    
+
+		            
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/Richie-Lee">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		            
+                    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/leerichie/">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		           
+                    
+                    
+                    
+                    
+                    
+                    
+            
+            
+            <li>
+                <a target="_blank" href="https://www.instagram.com/richie_lee_/">
+                    <span class="fa-stack fa-lg">
+                        <i class="fas fa-circle fa-stack-2x"></i>
+                        <i class="fab fa-instagram fa-stack-1x fa-inverse"></i>
+                    </span>
+                </a>
+            </li>
+            
+            
+           
+                   <li>
+                       <a href='' rel="alternate" type="application/rss+xml" title="Richie Lee" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fas fa-circle fa-stack-2x"></i>
+                               <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+            
+             </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Richie Lee 2023
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function loadAsync(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        loadAsync("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    loadAsync("https://cdn.jsdelivr.net/npm/fastclick@1.0.6/lib/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+
+
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        
+        
+        
+        
+            _containerSelector = 'div.post-container'
+        
+
+        
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        
+        $(selector).html('')
+
+        
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    
+
+
+    loadAsync("\/js\/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+
+
+
+</body>
+</html>
