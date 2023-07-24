@@ -2,98 +2,98 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://richie-lee.github.io/post/2023_bayesian_ab_testing_jet/</loc>
+    <loc>/post/2023_bayesian_ab_testing_jet/</loc>
     <lastmod>2023-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/bayesian-statistics/</loc>
+    <loc>/tags/bayesian-statistics/</loc>
     <lastmod>2023-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/categories/</loc>
+    <loc>/categories/</loc>
     <lastmod>2023-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/classification/</loc>
+    <loc>/tags/classification/</loc>
     <lastmod>2023-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/econometrics/</loc>
+    <loc>/tags/econometrics/</loc>
     <lastmod>2023-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/industry/</loc>
+    <loc>/tags/industry/</loc>
     <lastmod>2023-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/post/</loc>
+    <loc>/post/</loc>
     <lastmod>2023-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/categories/projects/</loc>
+    <loc>/categories/projects/</loc>
     <lastmod>2023-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/</loc>
+    <loc>/</loc>
     <lastmod>2023-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/</loc>
+    <loc>/tags/</loc>
     <lastmod>2023-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/clustering/</loc>
+    <loc>/tags/clustering/</loc>
     <lastmod>2022-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/data-science/</loc>
+    <loc>/tags/data-science/</loc>
     <lastmod>2022-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/forecasting/</loc>
+    <loc>/tags/forecasting/</loc>
     <lastmod>2022-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/post/2022_heterogeneity_ah/</loc>
+    <loc>/post/2022_heterogeneity_ah/</loc>
     <lastmod>2022-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/outlier-detection/</loc>
+    <loc>/tags/outlier-detection/</loc>
     <lastmod>2022-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/panel-data/</loc>
+    <loc>/tags/panel-data/</loc>
     <lastmod>2022-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/regression/</loc>
+    <loc>/tags/regression/</loc>
     <lastmod>2022-05-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/computer-science/</loc>
+    <loc>/tags/computer-science/</loc>
     <lastmod>2021-12-21T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/dimension-reduction/</loc>
+    <loc>/tags/dimension-reduction/</loc>
     <lastmod>2021-12-21T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/post/2021_lsh_duplicate_detection/</loc>
+    <loc>/post/2021_lsh_duplicate_detection/</loc>
     <lastmod>2021-12-21T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/text-analysis/</loc>
+    <loc>/tags/text-analysis/</loc>
     <lastmod>2021-12-21T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/machine-learning/</loc>
+    <loc>/tags/machine-learning/</loc>
     <lastmod>2021-06-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/post/2021_factor_ml_forecasting/</loc>
+    <loc>/post/2021_factor_ml_forecasting/</loc>
     <lastmod>2021-06-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/deep-learning/</loc>
+    <loc>/tags/deep-learning/</loc>
     <lastmod>2021-04-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/nlp/</loc>
+    <loc>/tags/nlp/</loc>
     <lastmod>2021-04-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/tags/pytorch/</loc>
+    <loc>/tags/pytorch/</loc>
     <lastmod>2021-04-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/post/2021_rnn_sentiment_classifier/</loc>
+    <loc>/post/2021_rnn_sentiment_classifier/</loc>
     <lastmod>2021-04-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/post/_readme/</loc>
+    <loc>/post/_readme/</loc>
     <lastmod>2019-01-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://richie-lee.github.io/about/</loc>
+    <loc>/about/</loc>
   </url><url>
-    <loc>https://richie-lee.github.io/notes/</loc>
+    <loc>/notes/</loc>
   </url><url>
-    <loc>https://richie-lee.github.io/search/placeholder/</loc>
+    <loc>/search/placeholder/</loc>
   </url><url>
-    <loc>https://richie-lee.github.io/archive/</loc>
+    <loc>/archive/</loc>
   </url><url>
-    <loc>https://richie-lee.github.io/search/</loc>
+    <loc>/search/</loc>
   </url>
 </urlset>
