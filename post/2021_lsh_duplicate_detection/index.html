@@ -229,7 +229,10 @@
                 <h2 id="tldr">TL:DR</h2>
 <p><em>This article explore the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques.</em></p>
 <p><em>The overall approach is summarised in the following diagram:</em>
-[insert big overview]</p>
+
+  <img src="/img/2021_duplicate_lsh/chart_horizontal.drawio.jpg" alt="">
+
+</p>
 <hr>
 <h2 id="context">Context</h2>
 <p>With the ever increasing relevance of online shopping and customers are becoming more comfortable with online platforms with user experience therefore playing a crucial role in driving sales and preventing churn. This posts concentrates on a vital yet often neglected aspect in this domain: product duplicate detection. Our focus is on delving into two significant challenges related to duplicate detection, crucial for data scientists to comprehend.</p>
@@ -293,7 +296,10 @@
 <p>To evaluate the scalability of the algorithm, all computations were executed using (nested) lists. <strong>Additionally, the usage of sparse matrices over boolean matrices reduced the order of the dimensions of matrix sizes from 10^5 to less than 10^2</strong>. As the number of products increased, there was no concerning increase in computing time observed, as the less demanding calculations of the algorithm were affected more. On average, a single bootstrap iteration of the algorithm (including tuning) required approximately 3 minutes for the full dataset.</p>
 <h3 id="classification-performance">Classification Performance</h3>
 <p>The performance of the algorithm was evaluated using bootstrap testing sets. The performance metrics for both the candidate pair selection (LSH) and the classification (Jaccard similarity) were considered. Figure 1 shows the results for three performance metrics at various levels of the fraction of comparisons, which is defined as the fraction of the total number of candidate pairs (selected using LSH) among the total number of possible pairs. Additionally, accuracy measures of the Jaccard classification algorithm are displayed.</p>
-<p>[insert 4 graphs]</p>
+<p>
+  <img src="/img/2021_duplicate_lsh/LSH_graphs.jpg" alt="">
+
+</p>
 <p><strong>Figure 1: Performance measures for LSH and Jaccard classification</strong></p>
 <p>After evaluating the performance metrics, the following conclusions can be drawn:</p>
 <ol>
@@ -315,7 +321,10 @@
 <p>In conclusion, though the duplicate detection framework appears to scale well, we find it incompatible with the dataset due to its poor performance in both candidate selection and correct classification. The main challenge that hindered performance was the fact that text similarity was insufficient to determine matches. In order to improve performance, we could either improve input data quality or rely more on more directly informative (latent) characteristics.</p>
 <h3 id="discussion">Discussion</h3>
 <p>The unsuccessful candidate selection was a result of poor pair quality (precision), which we hypothesize to be related to the imbalanced dataset (0.03% duplicate) or due to an insufficient amount of product information used during LSH. The classification showed superior performance for notably low Jaccard-similarity thresholds, giving rise to the idea of investigating Jaccard similarity distributions:</p>
-<p>[insert distributions]</p>
+<p>
+  <img src="/img/2021_duplicate_lsh/Duplicate_jaccard_distribution.jpg" alt="">
+
+</p>
 <p>Though it may be intuitive that duplicates would share a near-perfect level of (Jaccard) similarity, the above figure rejects this assumption convincingly. Therefore, pursuing high product similarity through Jaccard-similarity maximization is concluded to be ineffective. As a (partial) solution, we could look into alternative criteria to represent product information or methods of reducing noise in the product information.</p>
 <p>Additionally, we also observe a negative bias in terms of Jaccard similarity distributions for the LSH candidate pairs. This implies that, on average, the candidate pairs are significantly less similar than true duplicates, whereas ideally, these distributions would be the same. Therefore, increasing the strictness on candidate pair selection (shifting the distribution to the right) could be helpful.</p>
 

@@ -34,8 +34,7 @@ Context In the competitive landscape of the supermarket industry, understanding 
       
       <guid>/post/2021_lsh_duplicate_detection/</guid>
       <description>TL:DR This article explore the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques.
-The overall approach is summarised in the following diagram: [insert big overview]
-Context With the ever increasing relevance of online shopping and customers are becoming more comfortable with online platforms with user experience therefore playing a crucial role in driving sales and preventing churn.</description>
+The overall approach is summarised in the following diagram: Context With the ever increasing relevance of online shopping and customers are becoming more comfortable with online platforms with user experience therefore playing a crucial role in driving sales and preventing churn.</description>
     </item>
     
     <item>

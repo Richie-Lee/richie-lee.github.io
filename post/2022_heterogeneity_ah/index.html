@@ -253,17 +253,20 @@
 <ol>
 <li><strong>Handling Missing Values:</strong> Missing values were addressed through appropriate imputation techniques to avoid any biases in the analysis.</li>
 <li><strong>Weight/Unit Correction:</strong> To standardize the data and enable meaningful comparisons, weight or unit inconsistencies (e.g.  <em>kg</em>, <em>lbs</em>, <em>unit</em>) were corrected to ensure consistency across products.</li>
-<li><strong>Multicollinearity:</strong> To prevent performance breakdown and identification problems caused by collinearity amongst variables (e.g. through the vegan/vegetarian categories), some covariates are merged.</li>
+<li><strong>Multicollinearity:</strong> To prevent performance breakdown and identification problems caused by collinearity amongst variables (e.g. through the vegan/vegetarian categories), some covariates are merged. After corrections, we observ the following correlations</li>
 </ol>
-<p>![Correlations](/img/2022_AH_Seminar/AH_Seminar correlations_attributes.png)</p>
+<p>
+  <img src="/img/2022_AH_Seminar/correlations_attributes.jpg" alt="Correlations">
+
+</p>
 <ol start="4">
 <li><strong>Outlier Detection:</strong> Visual inspection through boxplots &amp; UpSet plots.
 
-  <img src="/img/2022_AH_Seminar/AH_Seminar_boxplot_outliers.png" alt="Boxplot">
+  <img src="/img/2022_AH_Seminar/boxplot_outliers.jpg" alt="Boxplot">
 
 
 
-  <img src="/img/2022_AH_Seminar/AH_Seminar_correlations_attributes.png" alt="Correlation attributes">
+  <img src="/img/2022_AH_Seminar/UpSet.jpg" alt="Upset">
 
 </li>
 </ol>
@@ -290,7 +293,10 @@
 <li>Disadvantage: Normality Assumption, May not converge, Computationally heavy</li>
 </ul>
 <p>In addition, the following statistical tests can be used to validate the necessary assumptions for model selection:</p>
-<p>![model selection](/img/2022_AH_Seminar/AH Seminar - Model Selection.png)</p>
+<p>
+  <img src="/img/2022_AH_Seminar/Model_Selection.jpg" alt="model selection">
+
+</p>
 <h2 id="results">Results</h2>
 <p>The analysis aimed to investigate the effect of product labels on sales in a supermarket across different categories. The findings reveal the following:</p>
 <ul>

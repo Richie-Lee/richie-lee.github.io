@@ -255,8 +255,16 @@
 <p><strong>LSTM (Long Short-Term Memory):</strong> This model is an RNN variation. In short, LSTM&rsquo;s main benefit is the &ldquo;conveyor belt&rdquo; consisting of only linear operations, avoiding gradient problems in the process. In addition, we also feed selected memory of the past to this belt through various &ldquo;gates&rdquo;.</p>
 </li>
 </ol>
+<p>
+  <img src="/img/2021_Sentiment_IMDb/architecture.jpg" alt="">
+
+</p>
 <h2 id="results">Results</h2>
-<p>Performance after the First Epoch</p>
+<p>Performance during the First Epoch of training:</p>
+<p>
+  <img src="/img/2021_Sentiment_IMDb/Accuracy_Development.jpg" alt="">
+
+</p>
 <p>The following table presents the performance metrics of the three models after the first epoch, including average loss and accuracy for both training and test sets:</p>
 <table>
 <thead>
@@ -299,7 +307,8 @@
 <p>Generally, the LSTM model was expected to perform the best, followed by the Elman and MLP models. However, the observed results differed from the initial expectations. The MLP model exhibited the highest out-of-sample performance, followed by the Elman and LSTM respectively. Why&rsquo;s that? It could be the result of one of the following:</p>
 <ul>
 <li>Due to time constraints, we limited training to a single epoch. Given the plots, it is reasonable to assume we have already largely converged, but this detail should not be ignored.</li>
-<li>Differences in Hyperparameter selection (particularly the <em>learning rate</em>) have strong effects on performance. For the LSTM, it even resulted in different model preferences amongst the training and validation set showing weak external validity and robustness of the (single-epoch) LSTM for the given hyperparameters.</li>
+<li>Different type of hidden layers also displayed substantial performance differences (Sigmoid, Tanh), making it an additional potential driver of performance.</li>
+<li>Differences in Hyperparameter selection (particularly the <em>learning rate</em>) have strong effects on performance. For the LSTM, it even resulted in different model preferences amongst the training and validation set showing weak external validity and robustness of the (single-epoch) LSTM for the given hyperparameters .</li>
 </ul>
 <table>
 <thead>
@@ -352,9 +361,11 @@
 </tr>
 </tbody>
 </table>
-<ul>
-<li>Different type of hidden layers also displayed substantial performance differences (Sigmoid, Tanh), making it an additional potential driver of performance.</li>
-</ul>
+<p>Plotting it out emphasizes that in single-epoch LSTM&rsquo;s, we are highly sensitive to hyperparameter tuning (learning rate):
+
+  <img src="/img/2021_Sentiment_IMDb/LSTM_comp_loss.jpg" alt="">
+
+</p>
 <h2 id="conclusion">Conclusion</h2>
 <p>This report aimed to address the task of sentiment classification on the IMDb dataset using different variations of RNN models. The MLP, Elman, and LSTM models were employed and evaluated in terms of performance metrics such as loss and accuracy.</p>
 <p>The results of the project deviated from initial expectations, with the MLP model outperforming the other variations. This unexpected outcome suggests the need for further hyperparameter tuning and investigation. In conclusion, while the performance showed decent results with simplified models achieving accuracies exceeding 75% accuracy, there is still room for improvement. Future work should focus on optimizing hyperparameters (something in which this study was limited due to time constraints), exploring different variations of RNNs, and investigating additional factors that may affect model performance.</p>
