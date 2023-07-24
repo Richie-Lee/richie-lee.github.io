@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projects on Richie Lee</title>
+    <link>https://richie-lee.github.io/categories/projects/</link>
+    <description>Recent content in Projects on Richie Lee</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 15 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://richie-lee.github.io/categories/projects/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bayesian A/B Testing: JustEatTakeaway.com [MSc Thesis - WIP]</title>
+      <link>https://richie-lee.github.io/post/2023_bayesian_ab_testing_jet/</link>
+      <pubDate>Mon, 15 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://richie-lee.github.io/post/2023_bayesian_ab_testing_jet/</guid>
+      <description>Introduction A/B testing has become a cornerstone in the digital age for identifying and measuring causal effects. It has emerged as the gold standard in the realm of statistical theory, enabling researchers to make data-driven decisions with strong evidence. A/B tests, also known as randomized controlled trials (RCTs), are observational studies that divide a target sample into two groups: a control group and a treatment group. By introducing an intervention, such as a new user feature, promotion, or policy, to the treatment group, researchers can isolate the treatment effect and analyse its impact.</description>
+    </item>
+    
+    <item>
+      <title>Modelling Unobserved Heterogeneity: Albert Heijn (Ahold Delhaize)</title>
+      <link>https://richie-lee.github.io/post/2022_heterogeneity_ah/</link>
+      <pubDate>Sun, 15 May 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://richie-lee.github.io/post/2022_heterogeneity_ah/</guid>
+      <description>TL:DR In collaboration with Albert Heijn, this study explores the dynamics between product labels and consumer buying behaviour. The study successfully addressed the challenges posed by panel data, such as unobserved heterogeneity, omitted variable bias, and seasonality, demonstrating the usefulness of the micro-econometric toolkit.
+The positive reception of the findings and methodologies led to an invitation to present the results at Albert Heijn&amp;rsquo;s Data Science department&amp;rsquo;s Knowledge Exchange initiative.
+Context In the competitive landscape of the supermarket industry, understanding consumer behaviour is crucial for Dutch market leader Albert Heijn (Ahold Delhaize) in developing effective strategies to improve revenue and profitability.</description>
+    </item>
+    
+    <item>
+      <title>Scalable Duplicate Detection &amp; Text Analysis: Ecommerce Products</title>
+      <link>https://richie-lee.github.io/post/2021_lsh_duplicate_detection/</link>
+      <pubDate>Tue, 21 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://richie-lee.github.io/post/2021_lsh_duplicate_detection/</guid>
+      <description>TL:DR This article explore the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques.
+The overall approach is summarised in the following diagram: [insert big overview]
+Context With the ever increasing relevance of online shopping and customers are becoming more comfortable with online platforms with user experience therefore playing a crucial role in driving sales and preventing churn.</description>
+    </item>
+    
+    <item>
+      <title>PCA Machine Learning Hybrid Models: Real Estate Forecasting</title>
+      <link>https://richie-lee.github.io/post/2021_factor_ml_forecasting/</link>
+      <pubDate>Sun, 06 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://richie-lee.github.io/post/2021_factor_ml_forecasting/</guid>
+      <description>TL:DR The objective of this study is to predict Dutch House prices using macroeconomic variables that were collected from Government open-source databases. Given the high number of explanatory variables relative to the number of observations, we recognise a good fit with parsimonious modelling. These models are characterised by their great explanatory power from minimal resources and are especially valuable in cases of limited or low-frequency data.
+The methods considered follow Kim &amp;amp; Swanson (2018) hybrid model design, where we combine factor modelling techniques (PCA, ICA, Sparse PCA) and machine learning ensembles (Boosting) and regularization methods (Elastic Net, Ridge regression, LASSO).</description>
+    </item>
+    
+    <item>
+      <title>Sentiment Classification: Movie Reviews</title>
+      <link>https://richie-lee.github.io/post/2021_rnn_sentiment_classifier/</link>
+      <pubDate>Sun, 25 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://richie-lee.github.io/post/2021_rnn_sentiment_classifier/</guid>
+      <description>Context The objective is to accurately identify whether a movie was positively or negatively received through text reviews from IMDb. This is a process that is often referred to as Sentiment Classification. Though seemingly trivial, there were multiple aspects that made this problem more challenging:
+Input data size is not consistent (different review lengths) Small differences are often relevant, ruling out standard similarity methods There are a lot of distinct dependencies across words Time constraints: 1 week for coding &amp;amp; reporting Data Amazons IMDb (Internet Movie Database) is known as the world&amp;rsquo;s most popular source for movie reviews.</description>
+    </item>
+    
+  </channel>
+</rss>
