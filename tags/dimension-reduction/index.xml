@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Dimension Reduction on Richie Lee</title>
+    <link>https://richie-lee.github.io/tags/dimension-reduction/</link>
+    <description>Recent content in Dimension Reduction on Richie Lee</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 21 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://richie-lee.github.io/tags/dimension-reduction/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Scalable Duplicate Detection &amp; Text Analysis: Ecommerce Products</title>
+      <link>https://richie-lee.github.io/post/2021_lsh_duplicate_detection/</link>
+      <pubDate>Tue, 21 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://richie-lee.github.io/post/2021_lsh_duplicate_detection/</guid>
+      <description>TL:DR This article explore the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques.
+The overall approach is summarised in the following diagram: [insert big overview]
+Context With the ever increasing relevance of online shopping and customers are becoming more comfortable with online platforms with user experience therefore playing a crucial role in driving sales and preventing churn.</description>
+    </item>
+    
+    <item>
+      <title>PCA Machine Learning Hybrid Models: Real Estate Forecasting</title>
+      <link>https://richie-lee.github.io/post/2021_factor_ml_forecasting/</link>
+      <pubDate>Sun, 06 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://richie-lee.github.io/post/2021_factor_ml_forecasting/</guid>
+      <description>TL:DR The objective of this study is to predict Dutch House prices using macroeconomic variables that were collected from Government open-source databases. Given the high number of explanatory variables relative to the number of observations, we recognise a good fit with parsimonious modelling. These models are characterised by their great explanatory power from minimal resources and are especially valuable in cases of limited or low-frequency data.
+The methods considered follow Kim &amp;amp; Swanson (2018) hybrid model design, where we combine factor modelling techniques (PCA, ICA, Sparse PCA) and machine learning ensembles (Boosting) and regularization methods (Elastic Net, Ridge regression, LASSO).</description>
+    </item>
+    
+  </channel>
+</rss>

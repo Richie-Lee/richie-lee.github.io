@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>NLP on Richie Lee</title>
+    <link>https://richie-lee.github.io/tags/nlp/</link>
+    <description>Recent content in NLP on Richie Lee</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 25 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://richie-lee.github.io/tags/nlp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Sentiment Classification: Movie Reviews</title>
+      <link>https://richie-lee.github.io/post/2021_rnn_sentiment_classifier/</link>
+      <pubDate>Sun, 25 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://richie-lee.github.io/post/2021_rnn_sentiment_classifier/</guid>
+      <description>Context The objective is to accurately identify whether a movie was positively or negatively received through text reviews from IMDb. This is a process that is often referred to as Sentiment Classification. Though seemingly trivial, there were multiple aspects that made this problem more challenging:
+Input data size is not consistent (different review lengths) Small differences are often relevant, ruling out standard similarity methods There are a lot of distinct dependencies across words Time constraints: 1 week for coding &amp;amp; reporting Data Amazons IMDb (Internet Movie Database) is known as the world&amp;rsquo;s most popular source for movie reviews.</description>
+    </item>
+    
+  </channel>
+</rss>

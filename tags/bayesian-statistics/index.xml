@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Bayesian Statistics on Richie Lee</title>
+    <link>https://richie-lee.github.io/tags/bayesian-statistics/</link>
+    <description>Recent content in Bayesian Statistics on Richie Lee</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 15 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://richie-lee.github.io/tags/bayesian-statistics/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bayesian A/B Testing: JustEatTakeaway.com [MSc Thesis - WIP]</title>
+      <link>https://richie-lee.github.io/post/2023_bayesian_ab_testing_jet/</link>
+      <pubDate>Mon, 15 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://richie-lee.github.io/post/2023_bayesian_ab_testing_jet/</guid>
+      <description>Introduction A/B testing has become a cornerstone in the digital age for identifying and measuring causal effects. It has emerged as the gold standard in the realm of statistical theory, enabling researchers to make data-driven decisions with strong evidence. A/B tests, also known as randomized controlled trials (RCTs), are observational studies that divide a target sample into two groups: a control group and a treatment group. By introducing an intervention, such as a new user feature, promotion, or policy, to the treatment group, researchers can isolate the treatment effect and analyse its impact.</description>
+    </item>
+    
+  </channel>
+</rss>
