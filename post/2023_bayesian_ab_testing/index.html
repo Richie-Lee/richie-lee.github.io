@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Richie Lee">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="/img/2023_Bayesian_AB/JET bikes.png">
+    <meta property="twitter:image" content="/img/2023_Bayesian_AB/JET bikes.png" />
+    
+
+    
+    <meta name="title" content="Bayesian A/B Testing with Early Stopping: JustEatTakeaway.com" />
+    <meta property="og:title" content="Bayesian A/B Testing with Early Stopping: JustEatTakeaway.com" />
+    <meta property="twitter:title" content="Bayesian A/B Testing with Early Stopping: JustEatTakeaway.com" />
+    
+
+    
+    <meta name="description" content="This post covers Bayesian A/B Testing, an alternative solution to traditional sequential A/B testing methods that strives to optimise cost-efficiency of experiments while preserving strength of evidence collected. To demonstrate and explain the basic concept, readers are referred to the brief introduction and simple implementation (Jupyter Notebook) further down below.">
+    <meta property="og:description" content="This post covers Bayesian A/B Testing, an alternative solution to traditional sequential A/B testing methods that strives to optimise cost-efficiency of experiments while preserving strength of evidence collected. To demonstrate and explain the basic concept, readers are referred to the brief introduction and simple implementation (Jupyter Notebook) further down below." />
+    <meta property="twitter:description" content="This post covers Bayesian A/B Testing, an alternative solution to traditional sequential A/B testing methods that strives to optimise cost-efficiency of experiments while preserving strength of evidence collected. To demonstrate and explain the basic concept, readers are referred to the brief introduction and simple implementation (Jupyter Notebook) further down below." />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="Microservice, Deep Learning">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Bayesian A/B Testing with Early Stopping: JustEatTakeaway.com | Personal Webpage</title>
+
+    <link rel="canonical" href="/post/2023_bayesian_ab_testing/">
+
+    
+    
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link rel="stylesheet" href="/css/font-awesome.all.min.css">
+
+    
+    
+
+    
+    <script src="/js/jquery.min.js"></script>
+
+    
+    <script src="/js/bootstrap.min.js"></script>
+
+    
+    <script src="/js/hux-blog.min.js"></script>
+
+    
+    <script src="/js/lazysizes.min.js"></script>
+
+    
+    
+
+</head>
+
+
+
+
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Richie Lee</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">All Posts</a>
+                    </li>
+                    
+                        
+                        <li>
+                            <a href="/categories/projects/">projects</a>
+                        </li>
+                        
+                    
+                    
+		    
+                        <li><a href="/about//">ABOUT</a></li>
+                    
+		            <li>
+                        <a href="/search"><i class="fa fa-search"></i></a>
+		           </li>
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('/img/2023_Bayesian_AB/JET%20bikes.png')
+    }
+</style>
+
+<header class="intro-header" >
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/econometrics" title="Econometrics">
+                            Econometrics
+                        </a>
+                        
+                        <a class="tag" href="/tags/industry" title="Industry">
+                            Industry
+                        </a>
+                        
+                        <a class="tag" href="/tags/bayesian-statistics" title="Bayesian Statistics">
+                            Bayesian Statistics
+                        </a>
+                        
+                        <a class="tag" href="/tags/classification" title="Classification">
+                            Classification
+                        </a>
+                        
+                        <a class="tag" href="/tags/causal-inference" title="Causal inference">
+                            Causal inference
+                        </a>
+                        
+                        <a class="tag" href="/tags/experimentation" title="Experimentation">
+                            Experimentation
+                        </a>
+                        
+                    </div>
+                    <h1>Bayesian A/B Testing with Early Stopping: JustEatTakeaway.com</h1>
+                    <h2 class="subheading">MSc Thesis (Work-in-progress) in collaboration with JustEatTakeaway.com</h2>
+                    <span class="meta">
+                        
+                            Posted by 
+                            
+                                Richie
+                             
+                            on 
+                            Saturday, April 1, 2023
+                            
+                            
+                            
+                            
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <h2 id="tldr">TL:DR</h2>
+<p>This post covers <strong>Bayesian A/B Testing</strong>, an alternative solution to designing cost-efficient experiments while preserving strength of evidence. To demonstrate and explain the basic concept, readers are referred to the brief introduction and simple implementation (Jupyter Notebook) further down below. Feel free to play around with the actual thing following the link <a href="https://colab.research.google.com/drive/1iqUmsEXiEwDrotTemrgyym-tAFdtgCAK">here</a>.</p>
+<hr>
+<h2 id="introduction">Introduction</h2>
+<p>A/B testing has become a cornerstone in the digital age for identifying and measuring causal effects. It has emerged as the gold standard in the realm of statistical theory, enabling researchers to make data-driven decisions with strong evidence. A/B tests, also known as randomized controlled trials (RCTs), are observational studies that divide a target sample into two groups: a control group and a treatment group. By introducing an intervention, such as a new user feature, promotion, or policy, to the treatment group, researchers can isolate the treatment effect and analyse its impact.</p>
+<p>The success of A/B testing lies in striking a balance between generating robust evidence and optimizing efficiency. Determining the appropriate sample size or experiment duration is critical in achieving this balance. While a larger sample size enhances statistical significance and strengthens the credibility of findings, it also incurs additional costs without necessarily adding value.</p>
+<p>In traditional A/B testing (Fixed horizon tests), it is essential to adhere to a pre-determined termination time for the experiment and refrain from conducting any inference before that point. This practice, known as &ldquo;Peeking,&rdquo; involves multiple interim examinations and significantly increases the risk of encountering misleadingly meaningful results due to inherent noise and variance. Peeking introduces biases and higher rates of false discoveries (Type-I errors), limiting our ability to effectively optimize the trade-off between evidence strength and efficiency within a fixed horizon framework.</p>
+<p>To address this challenge, Sequential A/B testing methods, such as Group Sequential Testing and Always Valid Inference, have gained popularity in the tech industry. These methods offer the flexibility to continuously monitor results and make real-time interventions while controlling the risk of peeking. They enable better management of the trade-off between efficiency and evidence strength.</p>
+<p>This study delves into an alternative sequential testing approach known as Bayesian A/B testing. Bayesian A/B testing differs from traditional frequentist approaches in its experiment stopping criteria and inference process. Instead of relying on p-values, Bayesian A/B testing employs Bayes Factors as stopping criteria and incorporates prior information into the analysis. These differences result in distinctive properties, including increased statistical power, interpretability, unrestricted interim testing, and enhanced efficiency.</p>
+<p>By addressing potential challenges and providing actionable recommendations, this research strives to contribute to the advancement and wider adoption of Bayesian A/B testing in the field.</p>
+<h2 id="jupyter-notebook">Jupyter Notebook</h2>
+<p>The general design of the code follows the following structure (but for simplicity, we only execute a single test):</p>
+<p>
+  <img src="/img/2023_Bayesian_AB/Architecture_code.jpg" alt="">
+
+</p>
+<p><strong>Code:</strong></p>
+<p>Import packages &amp; track runtime</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff79c6">import</span> numpy <span style="color:#ff79c6">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> pandas <span style="color:#ff79c6">as</span> pd
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> seaborn <span style="color:#ff79c6">as</span> sns
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> matplotlib.pyplot <span style="color:#ff79c6">as</span> plt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> scipy.stats <span style="color:#ff79c6">as</span> stats
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> random
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> datetime <span style="color:#ff79c6">import</span> datetime
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Track total runtime</span>
+</span></span><span style="display:flex;"><span>_start_time <span style="color:#ff79c6">=</span> datetime<span style="color:#ff79c6">.</span>now()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Set the style &amp; colors for the plots</span>
+</span></span><span style="display:flex;"><span>sns<span style="color:#ff79c6">.</span>set_style(<span style="color:#f1fa8c">&#39;darkgrid&#39;</span>)
+</span></span><span style="display:flex;"><span>_colors <span style="color:#ff79c6">=</span> plt<span style="color:#ff79c6">.</span>rcParams[<span style="color:#f1fa8c">&#39;axes.prop_cycle&#39;</span>]<span style="color:#ff79c6">.</span>by_key()[<span style="color:#f1fa8c">&#39;color&#39;</span>]
+</span></span></code></pre></div><p>Specify settings &amp; parameters:</p>
+<ul>
+<li><strong>Hypotheses</strong>: H0 &amp; non-composite H1, for likelihood derivation simplicity</li>
+<li><strong>MDE</strong>: minimal detectable effect</li>
+<li><strong>DGP Control &amp; Treatment</strong>: Bernoulli with known mean, sample sizes &amp; True treatment effect</li>
+<li><strong>Prior</strong>: prior influence (n, weight) and Beta-distributed (Conjugate)</li>
+<li><strong>Early stopping</strong>: Toggle whether to activate or not, Stopping probability (if the likelihoods confidence in a hypothesis exceeds this value → terminate experiment), and the number of samples collected between interim testing</li>
+<li><strong>Loss function</strong></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">Part 0: Settings &amp; Hyperparameters
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>random<span style="color:#ff79c6">.</span>seed(<span style="color:#bd93f9">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># H0: effect = 0, H1: effect = mde (note, not composite! though still practical for that purpose)</span>
+</span></span><span style="display:flex;"><span>hypotheses <span style="color:#ff79c6">=</span> {<span style="color:#f1fa8c">&#34;null&#34;</span>: <span style="color:#bd93f9">0.6</span>, <span style="color:#f1fa8c">&#34;alt&#34;</span>: <span style="color:#bd93f9">0.65</span>, <span style="color:#f1fa8c">&#34;mde&#34;</span>: <span style="color:#bd93f9">0.03</span>}
+</span></span><span style="display:flex;"><span>_relative_loss_theshold <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0.05</span> <span style="color:#6272a4"># Used for loss -&gt; e.g. 0.05 = 5% of prior effect deviation is accepted</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Define Control &amp; Treatment DGP (Bernoulli distributed)</span>
+</span></span><span style="display:flex;"><span>C <span style="color:#ff79c6">=</span> {<span style="color:#f1fa8c">&#34;n&#34;</span>: <span style="color:#bd93f9">10_000</span>, <span style="color:#f1fa8c">&#34;true_prob&#34;</span>: <span style="color:#bd93f9">0.6</span>}
+</span></span><span style="display:flex;"><span>T <span style="color:#ff79c6">=</span> {<span style="color:#f1fa8c">&#34;n&#34;</span>: <span style="color:#bd93f9">10_000</span>, <span style="color:#f1fa8c">&#34;true_prob&#34;</span>: <span style="color:#bd93f9">0.65</span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Define Prior (Beta distributed -&gt; Conjugate)</span>
+</span></span><span style="display:flex;"><span>prior <span style="color:#ff79c6">=</span> {<span style="color:#f1fa8c">&#34;n&#34;</span>: <span style="color:#bd93f9">1000</span>, <span style="color:#f1fa8c">&#34;weight&#34;</span>: <span style="color:#bd93f9">100</span>, <span style="color:#f1fa8c">&#34;prior_control&#34;</span>: <span style="color:#bd93f9">0.6</span>, <span style="color:#f1fa8c">&#34;prior_treatment&#34;</span>: <span style="color:#bd93f9">0.63</span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Early Stopping parameters (criteria in % for intuitive use-cases)</span>
+</span></span><span style="display:flex;"><span>sequential_testing <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
+</span></span><span style="display:flex;"><span>early_stopping <span style="color:#ff79c6">=</span> {<span style="color:#f1fa8c">&#34;stopping_criteria_prob&#34;</span>: <span style="color:#bd93f9">95</span>, <span style="color:#f1fa8c">&#34;interim_test_interval&#34;</span>: <span style="color:#bd93f9">10</span>}
+</span></span></code></pre></div><p>Generates input data from <strong>Bernoulli Distributions</strong>. It gets the individual observations, number of &ldquo;converted&rdquo; observations and the corresponding conversion rate for both <strong>Control &amp; Treatment</strong>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">Part 1: Generate Data
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">get_bernoulli_sample</span>(mean, n):
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Sample bernoulli distribution with relevant metrics</span>
+</span></span><span style="display:flex;"><span>    samples <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">if</span> random<span style="color:#ff79c6">.</span>random() <span style="color:#ff79c6">&lt;</span> mean <span style="color:#ff79c6">else</span> <span style="color:#bd93f9">0</span> <span style="color:#ff79c6">for</span> _ <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(n)]
+</span></span><span style="display:flex;"><span>    converted <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">sum</span>(samples)
+</span></span><span style="display:flex;"><span>    mean <span style="color:#ff79c6">=</span> converted<span style="color:#ff79c6">/</span>n
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> samples, converted, mean
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>C[<span style="color:#f1fa8c">&#34;sample&#34;</span>], C[<span style="color:#f1fa8c">&#34;converted&#34;</span>], C[<span style="color:#f1fa8c">&#34;sample_conversion_rate&#34;</span>] <span style="color:#ff79c6">=</span> get_bernoulli_sample(mean <span style="color:#ff79c6">=</span> C[<span style="color:#f1fa8c">&#34;true_prob&#34;</span>], n <span style="color:#ff79c6">=</span> C[<span style="color:#f1fa8c">&#34;n&#34;</span>])
+</span></span><span style="display:flex;"><span>T[<span style="color:#f1fa8c">&#34;sample&#34;</span>], T[<span style="color:#f1fa8c">&#34;converted&#34;</span>], T[<span style="color:#f1fa8c">&#34;sample_conversion_rate&#34;</span>] <span style="color:#ff79c6">=</span> get_bernoulli_sample(mean <span style="color:#ff79c6">=</span> T[<span style="color:#f1fa8c">&#34;true_prob&#34;</span>], n <span style="color:#ff79c6">=</span> T[<span style="color:#f1fa8c">&#34;n&#34;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># visualise data structre</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;Control: </span><span style="color:#f1fa8c">{</span>C[<span style="color:#f1fa8c">&#39;sample&#39;</span>][:<span style="color:#bd93f9">10</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">, Conversion_Rate = </span><span style="color:#f1fa8c">{</span>C[<span style="color:#f1fa8c">&#39;sample_conversion_rate&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> (true = </span><span style="color:#f1fa8c">{</span>C[<span style="color:#f1fa8c">&#39;true_prob&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">) </span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">Treatment: </span><span style="color:#f1fa8c">{</span>T[<span style="color:#f1fa8c">&#39;sample&#39;</span>][:<span style="color:#bd93f9">10</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">, Conversion_Rate = </span><span style="color:#f1fa8c">{</span>T[<span style="color:#f1fa8c">&#39;sample_conversion_rate&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> (true = </span><span style="color:#f1fa8c">{</span>T[<span style="color:#f1fa8c">&#39;true_prob&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">)&#34;</span>)
+</span></span></code></pre></div><pre><code>Control: [1, 0, 0, 1, 1, 1, 0, 0, 1, 1], Conversion_Rate = 0.6021 (true = 0.6)
+Treatment: [1, 1, 1, 1, 1, 1, 0, 0, 1, 1], Conversion_Rate = 0.653 (true = 0.65)
+</code></pre>
+<p>Here the <strong>Bayes Factor for the Treatment group</strong> is obtained by:</p>
+<p>$$BF_{H1|H0} = exp(log(BF_{H1|H0})) = exp(log(P[data|H1]) - log(P[data|H0])) = \frac{P[data|H1]}{P[data|H0]}$$</p>
+<p>Which uses <strong>log-likelihoods</strong>. The log tranformation in between is important as the denominator of the regular Bayes factor can easily converge to 0 causing a zero-division problem if unaddressed.</p>
+<p>log-likelihood Bernoulli:
+$$  \log L(p; x) = \log(p^x (1 - p)^{1 - x}) = x \log p + (1 - x) \log(1 - p) $$</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">Part 2: Log Likelihoods
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Log is important, to prevent &#34;float division by zero&#34; as data dimensions increase and likelihoods converge to 0</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">bernoulli_log_likelihood</span>(hypothesis, outcomes):
+</span></span><span style="display:flex;"><span>    log_likelihood <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0.0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">for</span> y <span style="color:#ff79c6">in</span> outcomes:
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> y <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span>:
+</span></span><span style="display:flex;"><span>            log_likelihood <span style="color:#ff79c6">+=</span> np<span style="color:#ff79c6">.</span>log(hypothesis)
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">elif</span> y <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>:
+</span></span><span style="display:flex;"><span>            log_likelihood <span style="color:#ff79c6">+=</span> np<span style="color:#ff79c6">.</span>log(<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">-</span> hypothesis)
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">raise</span> ValueError(<span style="color:#f1fa8c">&#34;Outcomes must contain non-negative integers&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> log_likelihood
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">log_likelihood_ratio_test</span>(treatment):
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Get likelihoods</span>
+</span></span><span style="display:flex;"><span>    null_log_likelihood <span style="color:#ff79c6">=</span> bernoulli_log_likelihood(hypotheses[<span style="color:#f1fa8c">&#34;null&#34;</span>], treatment)
+</span></span><span style="display:flex;"><span>    alt_log_likelihood <span style="color:#ff79c6">=</span> bernoulli_log_likelihood(hypotheses[<span style="color:#f1fa8c">&#34;alt&#34;</span>], treatment)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Compute BF: H1|H0</span>
+</span></span><span style="display:flex;"><span>    log_bayes_factor <span style="color:#ff79c6">=</span> alt_log_likelihood <span style="color:#ff79c6">-</span> null_log_likelihood
+</span></span><span style="display:flex;"><span>    bayes_factor <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">round</span>(np<span style="color:#ff79c6">.</span>exp(log_bayes_factor), <span style="color:#bd93f9">3</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> bayes_factor
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>T[<span style="color:#f1fa8c">&#34;bayes_factor&#34;</span>] <span style="color:#ff79c6">=</span> log_likelihood_ratio_test(T[<span style="color:#f1fa8c">&#34;sample&#34;</span>])
+</span></span></code></pre></div><p>Optionally if <em>sequential_testing = True</em>, we activate <strong>early stopping</strong> (symmetric for accepting/rejecting H0), based on a pre-specified <strong>hyperparameter k</strong> that controls early stopping strictness.</p>
+<p>The stopping rule instructs us to stop sampling if:</p>
+<p>$$ BF_{H1|H0} &gt; k \quad \text{or} \quad BF_{H1|H0} &lt; \frac{1}{k} $$</p>
+<p>Early stopping is determined by the Treatment sample, and then, we sample the <strong>same number of observations from the control group</strong>. In practical terms, this designs pushes a balanced control/treatment group, which in practice may not hold.</p>
+<p>For programming convenience, Fixed Horizon observations (object: <em>T</em> &amp; <em>C</em>) are not saved when early stopping is triggered. It is possible to change (efficiently) with more clever programming, but for now this suffices.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">Part 2.5: Early Stopping
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Explanation stopping rule</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;A stopping criteria of </span><span style="color:#f1fa8c">{</span>early_stopping[<span style="color:#f1fa8c">&#39;stopping_criteria_prob&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">% yields a k of </span><span style="color:#f1fa8c">{</span>early_stopping[<span style="color:#f1fa8c">&#39;stopping_criteria_prob&#39;</span>] <span style="color:#ff79c6">/</span> (<span style="color:#bd93f9">100</span> <span style="color:#ff79c6">-</span> early_stopping[<span style="color:#f1fa8c">&#39;stopping_criteria_prob&#39;</span>])<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;we trigger early stopping if BF &gt; UB = k = </span><span style="color:#f1fa8c">{</span>early_stopping[<span style="color:#f1fa8c">&#39;stopping_criteria_prob&#39;</span>] <span style="color:#ff79c6">/</span> (<span style="color:#bd93f9">100</span> <span style="color:#ff79c6">-</span> early_stopping[<span style="color:#f1fa8c">&#39;stopping_criteria_prob&#39;</span>])<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;                          or BF &lt; LB = 1/k = </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">round</span>(<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">/</span> (early_stopping[<span style="color:#f1fa8c">&#39;stopping_criteria_prob&#39;</span>] <span style="color:#ff79c6">/</span> (<span style="color:#bd93f9">100</span> <span style="color:#ff79c6">-</span> early_stopping[<span style="color:#f1fa8c">&#39;stopping_criteria_prob&#39;</span>])), <span style="color:#bd93f9">3</span>)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">early_stopping_sampling</span>(treatment):
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Stopping criteria (symmetric) - computed using hyperparameter confidence %</span>
+</span></span><span style="display:flex;"><span>    k <span style="color:#ff79c6">=</span>  early_stopping[<span style="color:#f1fa8c">&#34;stopping_criteria_prob&#34;</span>] <span style="color:#ff79c6">/</span> (<span style="color:#bd93f9">100</span> <span style="color:#ff79c6">-</span> early_stopping[<span style="color:#f1fa8c">&#34;stopping_criteria_prob&#34;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Initialise</span>
+</span></span><span style="display:flex;"><span>    bayes_factor, n_test <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">0</span>
+</span></span><span style="display:flex;"><span>    early_stop <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>
+</span></span><span style="display:flex;"><span>    interim_tests <span style="color:#ff79c6">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">while</span> early_stop <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">False</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#6272a4"># sample</span>
+</span></span><span style="display:flex;"><span>        n_test <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">1</span>
+</span></span><span style="display:flex;"><span>        n_observed <span style="color:#ff79c6">=</span> n_test <span style="color:#ff79c6">*</span> early_stopping[<span style="color:#f1fa8c">&#34;interim_test_interval&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#6272a4"># Full data set utilised</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> n_observed <span style="color:#ff79c6">&gt;</span> T[<span style="color:#f1fa8c">&#34;n&#34;</span>]:
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">break</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        data_observed <span style="color:#ff79c6">=</span> treatment[:n_observed]
+</span></span><span style="display:flex;"><span>        bayes_factor <span style="color:#ff79c6">=</span> log_likelihood_ratio_test(data_observed)
+</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;n: </span><span style="color:#f1fa8c">{</span>n_observed<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">/</span><span style="color:#f1fa8c">{</span>T[<span style="color:#f1fa8c">&#39;n&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">, BF: </span><span style="color:#f1fa8c">{</span>bayes_factor<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#6272a4"># Stopping criteria</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> (bayes_factor <span style="color:#ff79c6">&gt;</span> k <span style="color:#ff79c6">or</span> bayes_factor <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">1</span><span style="color:#ff79c6">/</span>k):
+</span></span><span style="display:flex;"><span>            early_stop <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        interim_tests<span style="color:#ff79c6">.</span>append((n_observed, bayes_factor))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Format new collections of info on treatment/control (slice control based on sample size of early stopping)</span>
+</span></span><span style="display:flex;"><span>    T_ES <span style="color:#ff79c6">=</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;sample&#34;</span>: data_observed,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;converted&#34;</span>: <span style="color:#8be9fd;font-style:italic">sum</span>(data_observed),
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;sample_conversion_rate&#34;</span>: <span style="color:#8be9fd;font-style:italic">round</span>(<span style="color:#8be9fd;font-style:italic">sum</span>(data_observed) <span style="color:#ff79c6">/</span> n_observed, <span style="color:#bd93f9">3</span>),
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;bayes_factor&#34;</span>: bayes_factor,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;interim_tests&#34;</span>: interim_tests,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;early_stop&#34;</span>: early_stop,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;n&#34;</span>: n_observed,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;n_test&#34;</span>: n_test,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;true_prob&#34;</span>: T[<span style="color:#f1fa8c">&#34;true_prob&#34;</span>]
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    C_ES <span style="color:#ff79c6">=</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;sample&#34;</span>: C[<span style="color:#f1fa8c">&#34;sample&#34;</span>][:n_observed],
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;converted&#34;</span>: <span style="color:#8be9fd;font-style:italic">sum</span>(C[<span style="color:#f1fa8c">&#34;sample&#34;</span>][:n_observed]),
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;sample_conversion_rate&#34;</span>: <span style="color:#8be9fd;font-style:italic">round</span>(<span style="color:#8be9fd;font-style:italic">sum</span>(C[<span style="color:#f1fa8c">&#34;sample&#34;</span>][:n_observed]) <span style="color:#ff79c6">/</span> n_observed, <span style="color:#bd93f9">3</span>),
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;n&#34;</span>: n_observed,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#34;true_prob&#34;</span>: C[<span style="color:#f1fa8c">&#34;true_prob&#34;</span>]
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> T_ES, C_ES, k
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> sequential_testing <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">True</span>:
+</span></span><span style="display:flex;"><span>    T_ES, C_ES, early_stopping[<span style="color:#f1fa8c">&#34;k&#34;</span>] <span style="color:#ff79c6">=</span> early_stopping_sampling(T[<span style="color:#f1fa8c">&#34;sample&#34;</span>])
+</span></span><span style="display:flex;"><span>    T, C <span style="color:#ff79c6">=</span> T_ES, C_ES
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Plot Bayes Factor Behaviour</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">plot_bayes_factors</span>(interim_tests):
+</span></span><span style="display:flex;"><span>    x, y <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">zip</span>(<span style="color:#ff79c6">*</span>interim_tests)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>plot(x, y, marker <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;.&#34;</span>, linestyle <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;-&#34;</span>, label <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;BF: H1|H0&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># plot stopping criteria</span>
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>axhline(y <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>, color <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;red&#34;</span>, linestyle <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;--&#34;</span>, linewidth <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;0.6&#34;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>axhline(y <span style="color:#ff79c6">=</span> early_stopping[<span style="color:#f1fa8c">&#34;k&#34;</span>], color <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;black&#34;</span>, linestyle <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;--&#34;</span>, linewidth <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;0.6&#34;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>axhline(y <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span><span style="color:#ff79c6">/</span>early_stopping[<span style="color:#f1fa8c">&#34;k&#34;</span>], color <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;black&#34;</span>, linestyle <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;--&#34;</span>, linewidth <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;0.6&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Set the y-axis to log scale</span>
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>yscale(<span style="color:#f1fa8c">&#39;log&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>xlabel(<span style="color:#f1fa8c">&#34;Sample size&#34;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>ylabel(<span style="color:#f1fa8c">&#34;Bayes_factor&#34;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>legend()
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>title(<span style="color:#f1fa8c">&#34;Bayes Factors during interim testing&#34;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>plot()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> sequential_testing <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">True</span>:
+</span></span><span style="display:flex;"><span>    plot_bayes_factors(T[<span style="color:#f1fa8c">&#34;interim_tests&#34;</span>])
+</span></span></code></pre></div><pre><code>A stopping criteria of 95% yields a k of 19.0
+we trigger early stopping if BF &gt; UB = k = 19.0
+                          or BF &lt; LB = 1/k = 0.053
+
+n: 10/10000, BF: 1.452
+n: 20/10000, BF: 1.376
+n: 30/10000, BF: 1.615
+n: 40/10000, BF: 0.806
+n: 50/10000, BF: 1.171
+n: 60/10000, BF: 1.701
+n: 70/10000, BF: 1.995
+n: 80/10000, BF: 1.527
+n: 90/10000, BF: 2.218
+n: 100/10000, BF: 2.102
+n: 110/10000, BF: 1.991
+n: 120/10000, BF: 2.336
+n: 130/10000, BF: 3.394
+n: 140/10000, BF: 3.981
+n: 150/10000, BF: 2.461
+n: 160/10000, BF: 2.887
+n: 170/10000, BF: 1.441
+n: 180/10000, BF: 0.891
+n: 190/10000, BF: 0.682
+n: 200/10000, BF: 0.522
+n: 210/10000, BF: 0.323
+n: 220/10000, BF: 0.718
+n: 230/10000, BF: 0.681
+n: 240/10000, BF: 0.645
+n: 250/10000, BF: 0.937
+n: 260/10000, BF: 1.361
+n: 270/10000, BF: 2.447
+n: 280/10000, BF: 2.319
+n: 290/10000, BF: 2.197
+n: 300/10000, BF: 2.577
+n: 310/10000, BF: 3.744
+n: 320/10000, BF: 2.865
+n: 330/10000, BF: 4.162
+n: 340/10000, BF: 4.882
+n: 350/10000, BF: 5.728
+n: 360/10000, BF: 6.72
+n: 370/10000, BF: 7.883
+n: 380/10000, BF: 7.47
+n: 390/10000, BF: 10.85
+n: 400/10000, BF: 19.512
+</code></pre>
+<p>
+  <img src="/img/2023_Bayesian_AB/output_9_1.jpg" alt="">
+
+</p>
+<p>The priors in this sandbox example follow a <strong>Beta-Distribution (Beta(a,b))</strong>. This decision follows from:</p>
+<ul>
+<li>It&rsquo;s a <strong>conjugate prior</strong>, i.e. the posterior will follow the same distribution, essentially simplifying following step A LOT.</li>
+<li>Beta distribution works well for outcome variables in range (0, 1), which in this context are probabilities of conversion.</li>
+</ul>
+<p>Additionally, two hyperparameter <strong>n</strong> (prior sample size) &amp; <strong>weight</strong> are used to (somewhat) <strong>control the prior influence</strong>. Roughly speaking, a higher weight yields a prior with lower variance and hence stronger effect on the posterior distrbutions.</p>
+<p>parameters a &amp; b in Beta(a, b) are determined from the prior probability belief (specified above) as follows:</p>
+<p>$$ a = weight * (P_{prior}) + 1 $$
+$$ b = weight * (1 - P_{prior}) + 1 $$</p>
+<p>The sample that is returned is sampled from this Beta distribution.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">Part 3: Priors (Conjugate)
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">beta_prior</span>(prior_prob, weight, n):
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Sample from Beta distribution: B(weight(prior belief) + 1, weight(1 - prior belief) + 1)</span>
+</span></span><span style="display:flex;"><span>    a <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">round</span>(prior_prob, <span style="color:#bd93f9">1</span>) <span style="color:#ff79c6">*</span> weight <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>
+</span></span><span style="display:flex;"><span>    b <span style="color:#ff79c6">=</span> (<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">-</span> <span style="color:#8be9fd;font-style:italic">round</span>(prior_prob, <span style="color:#bd93f9">1</span>)) <span style="color:#ff79c6">*</span> weight <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>
+</span></span><span style="display:flex;"><span>    beta_prior <span style="color:#ff79c6">=</span> stats<span style="color:#ff79c6">.</span>beta(a, b)
+</span></span><span style="display:flex;"><span>    samples <span style="color:#ff79c6">=</span> beta_prior<span style="color:#ff79c6">.</span>rvs(size <span style="color:#ff79c6">=</span> n)
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> beta_prior, samples, a, b
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>C[<span style="color:#f1fa8c">&#34;prior_dist&#34;</span>], C[<span style="color:#f1fa8c">&#34;prior_sample&#34;</span>], C[<span style="color:#f1fa8c">&#34;prior_beta_a&#34;</span>], C[<span style="color:#f1fa8c">&#34;prior_beta_b&#34;</span>] <span style="color:#ff79c6">=</span> beta_prior(prior[<span style="color:#f1fa8c">&#34;prior_control&#34;</span>], prior[<span style="color:#f1fa8c">&#34;weight&#34;</span>], prior[<span style="color:#f1fa8c">&#34;n&#34;</span>])
+</span></span><span style="display:flex;"><span>T[<span style="color:#f1fa8c">&#34;prior_dist&#34;</span>], T[<span style="color:#f1fa8c">&#34;prior_sample&#34;</span>], T[<span style="color:#f1fa8c">&#34;prior_beta_a&#34;</span>], T[<span style="color:#f1fa8c">&#34;prior_beta_b&#34;</span>] <span style="color:#ff79c6">=</span> beta_prior(prior[<span style="color:#f1fa8c">&#34;prior_treatment&#34;</span>], prior[<span style="color:#f1fa8c">&#34;weight&#34;</span>], prior[<span style="color:#f1fa8c">&#34;n&#34;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;Based on Beta prior specification: </span><span style="color:#f1fa8c">{</span>prior<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">plot_priors</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Plot the histogram + kernel (Posterior)</span>
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>hist(C[<span style="color:#f1fa8c">&#34;prior_sample&#34;</span>], bins <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">30</span>, alpha <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0.5</span>, density<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>, color <span style="color:#ff79c6">=</span> _colors[<span style="color:#bd93f9">0</span>])
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>hist(T[<span style="color:#f1fa8c">&#34;prior_sample&#34;</span>], bins <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">30</span>, alpha <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0.5</span>, density<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>, color <span style="color:#ff79c6">=</span> _colors[<span style="color:#bd93f9">1</span>])
+</span></span><span style="display:flex;"><span>    sns<span style="color:#ff79c6">.</span>kdeplot(C[<span style="color:#f1fa8c">&#34;prior_sample&#34;</span>], label<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;Control&#39;</span>, fill <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>, color <span style="color:#ff79c6">=</span> _colors[<span style="color:#bd93f9">0</span>])
+</span></span><span style="display:flex;"><span>    sns<span style="color:#ff79c6">.</span>kdeplot(T[<span style="color:#f1fa8c">&#34;prior_sample&#34;</span>], label<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;Treatment&#39;</span>, fill <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>, color <span style="color:#ff79c6">=</span> _colors[<span style="color:#bd93f9">1</span>])
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>xlabel(<span style="color:#f1fa8c">&#39;Probability&#39;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>legend()
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>title(<span style="color:#f1fa8c">&#34;Samples from prior distributions&#34;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>show()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plot_priors()
+</span></span></code></pre></div><pre><code>Based on Beta prior specification: {'n': 1000, 'weight': 100, 'prior_control': 0.6, 'prior_treatment': 0.63}
+</code></pre>
+<p>
+  <img src="/img/2023_Bayesian_AB/output_11_1.jpg" alt="">
+
+</p>
+<p>Given a (Conjugate) Beta-prior and a bernoulli DGP, the following simple posterior follows:</p>
+<p>$$ Beta_{post}(a&rsquo;,b&rsquo;) = Beta(a_{prior} + n_{converted}, b_{prior} + (n - n_{converted}))$$</p>
+<p>We sample from this distribution (with the same number of observations as the original DGP) for both control and treatment.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">Part 4: Posteriors
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">beta_posterior</span>(prior_a, prior_b, converted, n):
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Beta distribution because prior Beta distribution is conjugate</span>
+</span></span><span style="display:flex;"><span>    beta_posterior <span style="color:#ff79c6">=</span> stats<span style="color:#ff79c6">.</span>beta(prior_a <span style="color:#ff79c6">+</span> converted, prior_b <span style="color:#ff79c6">+</span> (n <span style="color:#ff79c6">-</span> converted))
+</span></span><span style="display:flex;"><span>    samples <span style="color:#ff79c6">=</span> beta_posterior<span style="color:#ff79c6">.</span>rvs(size <span style="color:#ff79c6">=</span> n)
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> beta_posterior, samples
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>C[<span style="color:#f1fa8c">&#34;post_dist&#34;</span>], C[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>] <span style="color:#ff79c6">=</span> beta_posterior(C[<span style="color:#f1fa8c">&#34;prior_beta_a&#34;</span>], C[<span style="color:#f1fa8c">&#34;prior_beta_b&#34;</span>], C[<span style="color:#f1fa8c">&#34;converted&#34;</span>], C[<span style="color:#f1fa8c">&#34;n&#34;</span>])
+</span></span><span style="display:flex;"><span>T[<span style="color:#f1fa8c">&#34;post_dist&#34;</span>], T[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>] <span style="color:#ff79c6">=</span> beta_posterior(T[<span style="color:#f1fa8c">&#34;prior_beta_a&#34;</span>], T[<span style="color:#f1fa8c">&#34;prior_beta_b&#34;</span>], T[<span style="color:#f1fa8c">&#34;converted&#34;</span>], T[<span style="color:#f1fa8c">&#34;n&#34;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">plot_posteriors</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Plot the histogram + kernel (Posterior)</span>
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>hist(C[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>], bins <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">30</span>, alpha <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0.5</span>, density<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>, color <span style="color:#ff79c6">=</span> _colors[<span style="color:#bd93f9">0</span>])
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>hist(T[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>], bins <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">30</span>, alpha <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0.5</span>, density<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>, color <span style="color:#ff79c6">=</span> _colors[<span style="color:#bd93f9">1</span>])
+</span></span><span style="display:flex;"><span>    sns<span style="color:#ff79c6">.</span>kdeplot(C[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>], label<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;Control&#39;</span>, fill <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>, color <span style="color:#ff79c6">=</span> _colors[<span style="color:#bd93f9">0</span>])
+</span></span><span style="display:flex;"><span>    sns<span style="color:#ff79c6">.</span>kdeplot(T[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>], label<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;Treatment&#39;</span>, fill <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>, color <span style="color:#ff79c6">=</span> _colors[<span style="color:#bd93f9">1</span>])
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>xlabel(<span style="color:#f1fa8c">&#39;Probability&#39;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>legend()
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>title(<span style="color:#f1fa8c">&#34;Samples from posterior distributions&#34;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>show()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plot_posteriors()
+</span></span></code></pre></div><p>
+  <img src="/img/2023_Bayesian_AB/output_14_0.jpg" alt="png">
+
+</p>
+<p>Now we have all the tools to start reporting results. We can get the following numbers:</p>
+<p>Treatment effect metrics</p>
+<ul>
+<li><strong>True effect</strong></li>
+<li>Observed effect (difference in DGP of Control &amp; Treatment)</li>
+<li><strong>Estimated effect (for both Control &amp; Treatment)</strong></li>
+<li>Prior effect (prior belief)</li>
+</ul>
+<p>In terms of <strong>relevant probabilities</strong>, we can measure:</p>
+<ul>
+<li>Posterior Probability of the treatment effect <strong>exceeding the prespecified MDE (minimal detectable effect)</strong> → P[TE &gt; MDE]</li>
+<li>Posterior probability of the the treatment group <strong>exceeding the control group</strong> → P[T &gt; C]</li>
+<li>(Roughly speaking) Probability H1, i.e. <strong>a significant effect, given the Bayes Factor</strong> (Solely data-driven, no prior information) → P[H1|BF]</li>
+</ul>
+<p>Based on the prior alongside a a-priori determined <em>acceptable loss threshold</em> (in %). We can formulate a loss function to determine which group (if any) performs well.</p>
+<ul>
+<li>Loss function for Treatment &amp; Control</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">Part 5: Reporting (Metrics &amp; Visualisations)
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Print hypotheses:</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">===============================</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">H0: y = </span><span style="color:#f1fa8c">{</span>hypotheses[<span style="color:#f1fa8c">&#39;null&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">, H1: y = </span><span style="color:#f1fa8c">{</span>hypotheses[<span style="color:#f1fa8c">&#39;alt&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">mde = </span><span style="color:#f1fa8c">{</span>hypotheses[<span style="color:#f1fa8c">&#39;mde&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> </span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">===============================&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">metrics</span>():
+</span></span><span style="display:flex;"><span>    prob_H1 <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">round</span>(T[<span style="color:#f1fa8c">&#34;bayes_factor&#34;</span>] <span style="color:#ff79c6">/</span> (T[<span style="color:#f1fa8c">&#34;bayes_factor&#34;</span>] <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>), <span style="color:#bd93f9">3</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">Informal probabilities: </span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">P[H1|BF]: </span><span style="color:#f1fa8c">{</span>prob_H1<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Evaluate how often treatment outperformes control</span>
+</span></span><span style="display:flex;"><span>    treatment_won <span style="color:#ff79c6">=</span> [t <span style="color:#ff79c6">-</span> c <span style="color:#ff79c6">&gt;=</span> hypotheses[<span style="color:#f1fa8c">&#39;mde&#39;</span>] <span style="color:#ff79c6">for</span> c, t <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">zip</span>(C[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>], T[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>])]
+</span></span><span style="display:flex;"><span>    prob_TE_better_mde <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">round</span>(np<span style="color:#ff79c6">.</span>mean(treatment_won), <span style="color:#bd93f9">2</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;posterior: P[T - C &gt;= mde]: </span><span style="color:#f1fa8c">{</span>prob_TE_better_mde<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span>    treatment_won <span style="color:#ff79c6">=</span> [t <span style="color:#ff79c6">&gt;=</span> c <span style="color:#ff79c6">for</span> c, t <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">zip</span>(C[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>], T[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>])]
+</span></span><span style="display:flex;"><span>    prob_TE_positive <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">round</span>(np<span style="color:#ff79c6">.</span>mean(treatment_won), <span style="color:#bd93f9">2</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;posterior: P[T &gt;= C]: </span><span style="color:#f1fa8c">{</span>prob_TE_positive<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Get treatment effect measurement</span>
+</span></span><span style="display:flex;"><span>    treatment_effect <span style="color:#ff79c6">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#f1fa8c">&#34;true&#34;</span>: <span style="color:#8be9fd;font-style:italic">round</span>(T[<span style="color:#f1fa8c">&#34;true_prob&#34;</span>] <span style="color:#ff79c6">-</span> C[<span style="color:#f1fa8c">&#34;true_prob&#34;</span>], <span style="color:#bd93f9">4</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#f1fa8c">&#34;observed&#34;</span>: <span style="color:#8be9fd;font-style:italic">round</span>(T[<span style="color:#f1fa8c">&#34;sample_conversion_rate&#34;</span>] <span style="color:#ff79c6">-</span> C[<span style="color:#f1fa8c">&#34;sample_conversion_rate&#34;</span>], <span style="color:#bd93f9">4</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#f1fa8c">&#34;estimated&#34;</span>: <span style="color:#8be9fd;font-style:italic">round</span>(T[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>]<span style="color:#ff79c6">.</span>mean() <span style="color:#ff79c6">-</span> C[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>]<span style="color:#ff79c6">.</span>mean(), <span style="color:#bd93f9">4</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#f1fa8c">&#34;prior&#34;</span>: <span style="color:#8be9fd;font-style:italic">round</span>(prior[<span style="color:#f1fa8c">&#34;prior_treatment&#34;</span>] <span style="color:#ff79c6">-</span> prior[<span style="color:#f1fa8c">&#34;prior_control&#34;</span>], <span style="color:#bd93f9">4</span>)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">Treatment effect:</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">- true: </span><span style="color:#f1fa8c">{</span>treatment_effect[<span style="color:#f1fa8c">&#39;true&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">- observed: </span><span style="color:#f1fa8c">{</span>treatment_effect[<span style="color:#f1fa8c">&#39;observed&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">- prior: </span><span style="color:#f1fa8c">{</span>treatment_effect[<span style="color:#f1fa8c">&#39;prior&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">- posterior: </span><span style="color:#f1fa8c">{</span>treatment_effect[<span style="color:#f1fa8c">&#39;estimated&#39;</span>]<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Compute loss (Reward/Penalise not choosing probability closest to the truth, by difference |T-C|)</span>
+</span></span><span style="display:flex;"><span>    loss_control <span style="color:#ff79c6">=</span> [<span style="color:#8be9fd;font-style:italic">max</span>(j <span style="color:#ff79c6">-</span> i, <span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">for</span> i,j <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">zip</span>(C[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>], T[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>])]
+</span></span><span style="display:flex;"><span>    loss_control <span style="color:#ff79c6">=</span> [<span style="color:#8be9fd;font-style:italic">int</span>(i)<span style="color:#ff79c6">*</span>j <span style="color:#ff79c6">for</span> i,j <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">zip</span>(treatment_won, loss_control)]
+</span></span><span style="display:flex;"><span>    loss_control <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">round</span>(np<span style="color:#ff79c6">.</span>mean(loss_control), <span style="color:#bd93f9">4</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    loss_treatment <span style="color:#ff79c6">=</span> [<span style="color:#8be9fd;font-style:italic">max</span>(i <span style="color:#ff79c6">-</span> j, <span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">for</span> i,j <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">zip</span>(C[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>], T[<span style="color:#f1fa8c">&#34;post_sample&#34;</span>])]
+</span></span><span style="display:flex;"><span>    loss_treatment <span style="color:#ff79c6">=</span> [(<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">-</span> <span style="color:#8be9fd;font-style:italic">int</span>(i))<span style="color:#ff79c6">*</span>j <span style="color:#ff79c6">for</span> i,j <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">zip</span>(treatment_won, loss_treatment)]
+</span></span><span style="display:flex;"><span>    loss_treatment <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">round</span>(np<span style="color:#ff79c6">.</span>mean(loss_treatment), <span style="color:#bd93f9">4</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">Loss (acceptable &lt;= </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">round</span>(treatment_effect[<span style="color:#f1fa8c">&#39;prior&#39;</span>] <span style="color:#ff79c6">*</span> _relative_loss_theshold, <span style="color:#bd93f9">4</span>)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">):</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">- Treatment: </span><span style="color:#f1fa8c">{</span>loss_treatment<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">- Control: </span><span style="color:#f1fa8c">{</span>loss_control<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> treatment_effect, loss_control, loss_treatment, prob_TE_better_mde, prob_TE_positive
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>treatment_effect, C[<span style="color:#f1fa8c">&#34;loss&#34;</span>], T[<span style="color:#f1fa8c">&#34;loss&#34;</span>], treatment_effect[<span style="color:#f1fa8c">&#34;p[TE&gt;mde]&#34;</span>], treatment_effect[<span style="color:#f1fa8c">&#34;p[T&gt;C]&#34;</span>] <span style="color:#ff79c6">=</span> metrics()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Print execution time</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">===============================</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">Total runtime:  </span><span style="color:#f1fa8c">{</span>datetime<span style="color:#ff79c6">.</span>now() <span style="color:#ff79c6">-</span> _start_time<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</span></span></code></pre></div><pre><code>===============================
+H0: y = 0.6, H1: y = 0.65
+mde = 0.03
+===============================
+
+Informal probabilities:
+P[H1|BF]: 0.951
+posterior: P[T - C &gt;= mde]: 0.42
+posterior: P[T &gt;= C]: 0.78
+
+Treatment effect:
+- true: 0.05
+- observed: 0.035
+- prior: 0.03
+- posterior: 0.0243
+
+Loss (acceptable &lt;= 0.0015):
+- Treatment: 0.0037
+- Control: 0.0279
+
+===============================
+Total runtime:  0:00:02.678526
+</code></pre>
+
+
+                
+
+                
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/2022_heterogeneity_ah/" data-toggle="tooltip" data-placement="top" title="Econometric Panel Data Modelling: Albert Heijn (Ahold Delhaize)">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+                
+
+                
+
+
+
+            </div>
+
+            
+            
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+            
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        <a href="/tags/bayesian-statistics" title="bayesian-statistics">
+                            bayesian-statistics
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/causal-inference" title="causal-inference">
+                            causal-inference
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/classification" title="classification">
+                            classification
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/clustering" title="clustering">
+                            clustering
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/computer-science" title="computer-science">
+                            computer-science
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/data-science" title="data-science">
+                            data-science
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/deep-learning" title="deep-learning">
+                            deep-learning
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/dimension-reduction" title="dimension-reduction">
+                            dimension-reduction
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/econometrics" title="econometrics">
+                            econometrics
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/experimentation" title="experimentation">
+                            experimentation
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/forecasting" title="forecasting">
+                            forecasting
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/industry" title="industry">
+                            industry
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/machine-learning" title="machine-learning">
+                            machine-learning
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/nlp" title="nlp">
+                            nlp
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/panel-data" title="panel-data">
+                            panel-data
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/regression" title="regression">
+                            regression
+                        </a>
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">                  
+                    
+                    <li>
+                        <a href="mailto:richie.lee@live.nl">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		           
+                    
+                    
+                    
+                    
+
+		            
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/Richie-Lee">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		            
+                    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/leerichie/">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		           
+                    
+                    
+                    
+                    
+                    
+                    
+            
+            
+            <li>
+                <a target="_blank" href="https://www.instagram.com/richie_lee_/">
+                    <span class="fa-stack fa-lg">
+                        <i class="fas fa-circle fa-stack-2x"></i>
+                        <i class="fab fa-instagram fa-stack-1x fa-inverse"></i>
+                    </span>
+                </a>
+            </li>
+            
+            
+           
+             </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Richie Lee 2023
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function loadAsync(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        loadAsync("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    loadAsync("https://cdn.jsdelivr.net/npm/fastclick@1.0.6/lib/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+
+
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        
+        
+        
+        
+            _containerSelector = 'div.post-container'
+        
+
+        
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        
+        $(selector).html('')
+
+        
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    
+
+
+    loadAsync("\/js\/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+
+
+
+</body>
+</html>

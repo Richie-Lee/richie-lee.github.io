@@ -2,19 +2,28 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>NLP on Richie Lee</title>
-    <link>https://richie-lee.github.io/tags/nlp/</link>
+    <link>/tags/nlp/</link>
     <description>Recent content in NLP on Richie Lee</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 25 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://richie-lee.github.io/tags/nlp/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 01 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/nlp/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Sentiment Classification: Movie Reviews</title>
-      <link>https://richie-lee.github.io/post/2021_rnn_sentiment_classifier/</link>
-      <pubDate>Sun, 25 Apr 2021 00:00:00 +0000</pubDate>
+      <title>Scalable Duplicate Detection &amp; Text Analysis: Ecommerce Products</title>
+      <link>/post/2021_lsh_duplicate_detection/</link>
+      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://richie-lee.github.io/post/2021_rnn_sentiment_classifier/</guid>
-      <description>Context The objective is to accurately identify whether a movie was positively or negatively received through text reviews from IMDb. This is a process that is often referred to as Sentiment Classification. Though seemingly trivial, there were multiple aspects that made this problem more challenging:
-Input data size is not consistent (different review lengths) Small differences are often relevant, ruling out standard similarity methods There are a lot of distinct dependencies across words Time constraints: 1 week for coding &amp;amp; reporting Data Amazons IMDb (Internet Movie Database) is known as the world&amp;rsquo;s most popular source for movie reviews.</description>
+      <guid>/post/2021_lsh_duplicate_detection/</guid>
+      <description>TL:DR This article explore the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques.
+The overall approach is summarised in the following diagram: Context With the ever increasing relevance of online shopping and customers are becoming more comfortable with online platforms with user experience therefore playing a crucial role in driving sales and preventing churn.</description>
+    </item>
+    
+    <item>
+      <title>RNN Sentiment Classification: Movie Reviews</title>
+      <link>/post/2021_rnn_sentiment_classifier/</link>
+      <pubDate>Thu, 01 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2021_rnn_sentiment_classifier/</guid>
+      <description>TL:DR The objective is to accurately identify whether a movie was positively or negatively received through text reviews from IMDb. This is a common NLP challenge that is known as Sentiment Classification. The proposed algorithm is a Recurrent Neural Network (RNN). Especially the ability to capture complex relations and sequential dependencies in text data is what becomes valuable here. In this brief post, a well-known RNN implementation, a LSTM, is benchmarked against other deep learning implementations and checked for robustness.</description>
     </item>
     
   </channel>

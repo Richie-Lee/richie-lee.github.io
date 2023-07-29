@@ -15,15 +15,15 @@
     
 
     
-    <meta name="title" content="Sentiment Classification: Movie Reviews" />
-    <meta property="og:title" content="Sentiment Classification: Movie Reviews" />
-    <meta property="twitter:title" content="Sentiment Classification: Movie Reviews" />
+    <meta name="title" content="RNN Sentiment Classification: Movie Reviews" />
+    <meta property="og:title" content="RNN Sentiment Classification: Movie Reviews" />
+    <meta property="twitter:title" content="RNN Sentiment Classification: Movie Reviews" />
     
 
     
-    <meta name="description" content="This study seeks to distinguish between positive and negative movie reviews using Recurrent Neural Networks (RNNs). In particular, the goal is to leverage their ability to capture complex relations and sequential dependencies in text data. ">
-    <meta property="og:description" content="This study seeks to distinguish between positive and negative movie reviews using Recurrent Neural Networks (RNNs). In particular, the goal is to leverage their ability to capture complex relations and sequential dependencies in text data. " />
-    <meta property="twitter:description" content="This study seeks to distinguish between positive and negative movie reviews using Recurrent Neural Networks (RNNs). In particular, the goal is to leverage their ability to capture complex relations and sequential dependencies in text data. " />
+    <meta name="description" content="This study seeks to distinguish between positive and negative movie reviews using Recurrent Neural Networks (RNNs). In particular, the goal is to leverage their ability to capture complex relations and sequential dependencies in text data. This method is benchmarked against other deep learning implementations and checked for robustness. ">
+    <meta property="og:description" content="This study seeks to distinguish between positive and negative movie reviews using Recurrent Neural Networks (RNNs). In particular, the goal is to leverage their ability to capture complex relations and sequential dependencies in text data. This method is benchmarked against other deep learning implementations and checked for robustness. " />
+    <meta property="twitter:description" content="This study seeks to distinguish between positive and negative movie reviews using Recurrent Neural Networks (RNNs). In particular, the goal is to leverage their ability to capture complex relations and sequential dependencies in text data. This method is benchmarked against other deep learning implementations and checked for robustness. " />
     
 
     
@@ -34,7 +34,7 @@
     <meta name="keyword"  content="Microservice, Deep Learning">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Sentiment Classification: Movie Reviews | Personal Webpage</title>
+    <title>RNN Sentiment Classification: Movie Reviews | Personal Webpage</title>
 
     <link rel="canonical" href="/post/2021_rnn_sentiment_classifier/">
 
@@ -178,16 +178,8 @@
                             Machine Learning
                         </a>
                         
-                        <a class="tag" href="/tags/text-analysis" title="Text analysis">
-                            Text analysis
-                        </a>
-                        
                         <a class="tag" href="/tags/nlp" title="NLP">
                             NLP
-                        </a>
-                        
-                        <a class="tag" href="/tags/pytorch" title="PyTorch">
-                            PyTorch
                         </a>
                         
                         <a class="tag" href="/tags/classification" title="Classification">
@@ -195,8 +187,8 @@
                         </a>
                         
                     </div>
-                    <h1>Sentiment Classification: Movie Reviews</h1>
-                    <h2 class="subheading">Deep Learning applied to a practical text analysis problem</h2>
+                    <h1>RNN Sentiment Classification: Movie Reviews</h1>
+                    <h2 class="subheading">Tackling a NLP challenge using LSTM for its compatibility with sequence data (text analysis)</h2>
                     <span class="meta">
                         
                             Posted by 
@@ -204,7 +196,7 @@
                                 Richie
                              
                             on 
-                            Sunday, April 25, 2021
+                            Thursday, April 1, 2021
                             
                             
                             
@@ -230,37 +222,52 @@
                 post-container">
 
                 
-                <h2 id="context">Context</h2>
-<p><em>The objective is to accurately identify whether a movie was positively or negatively received through text reviews from IMDb. This is a process that is often referred to as Sentiment Classification. Though seemingly trivial, there were multiple aspects that made this problem more challenging:</em></p>
+                <h2 id="tldr">TL:DR</h2>
+<p><em>The objective is to accurately identify whether a movie was positively or negatively received through text reviews from IMDb. This is a common NLP challenge that is known as Sentiment Classification. The proposed algorithm is a Recurrent Neural Network (RNN). Especially the ability to capture complex relations and sequential dependencies in text data is what becomes valuable here. In this brief post, a well-known RNN implementation, a LSTM, is benchmarked against other deep learning implementations and checked for robustness. The 3 classifiers are, roughly speaking, designed as follows:</em></p>
+<p>
+  <img src="/img/2021_Sentiment_IMDb/architecture.jpg" alt="">
+
+</p>
+<h2 id="context">Context</h2>
+<p>Though seemingly trivial, performing sentiment classification well and particularly preserving robustness presents several complexities that we should be mindful of:</p>
 <ul>
-<li><em>Input data size is not consistent (different review lengths)</em></li>
-<li><em>Small differences are often relevant, ruling out standard similarity methods</em></li>
-<li><em>There are a lot of distinct dependencies across words</em></li>
-<li><em>Time constraints: 1 week for coding &amp; reporting</em></li>
+<li>
+<p><strong>Inconsistent Input Data Size:</strong> The reviews varied in length, making it challenging to apply standard approaches due to the differing number of words in each review.</p>
+</li>
+<li>
+<p><strong>Relevance of Small Differences:</strong> Minor nuances in the text could be crucial in determining sentiment, making it necessary to capture subtle distinctions, which traditional similarity methods might overlook.</p>
+</li>
+<li>
+<p><strong>Complex Within Observation Dependencies:</strong> Textual data often exhibits intricate relationships within each observation, requiring sophisticated techniques to handle these dependencies effectively.</p>
+</li>
+</ul>
+<p>Moreover, for this project specifically:</p>
+<ul>
+<li><strong>Time Constraints:</strong> The sentiment classification project had a strict time frame of only one week for coding and reporting. Despite this limitation, the task was completed successfully as part of a minor at the MSc Artificial Intelligence program at Vrije Universiteit Amsterdam, with a grade of 9.5/10.</li>
 </ul>
 <h2 id="data">Data</h2>
 <p>Amazons <a href="https://www.imdb.com/">IMDb</a> (Internet Movie Database) is known as the world&rsquo;s most popular source for movie reviews. However, it is also a commonly-used sequence-learning database as it is a large, challenging classification dataset with plenty of examples.</p>
-<p>The utilized dataset consists of 50,000 preprocessed and <a href="https://www.analyticsvidhya.com/blog/2020/05/what-is-tokenization-nlp/">tokenised</a> reviews. To improve training time by reducing required padding and computations, variable batch sizes are implemented. This ensures that (approximately) equal-sized batches are constructed in terms of tokens, while allowing the number of sequences per batch to differ.</p>
-<p>During model development and tuning, a validation split of 20,000 training instances and 5,000 validation instances is used. For the final test, a canonical test/train split of 25,000 instances each is applied. This design should prevent data leakage i.e. loss of robustness and misleadingly strong results due to accidentally fitting on test data.</p>
+<p>The utilized dataset consists of 50,000 preprocessed and <strong><a href="https://www.analyticsvidhya.com/blog/2020/05/what-is-tokenization-nlp/">tokenised</a></strong> reviews. To improve training time by reducing required padding and computations, <strong>variable batch sizes are implemented</strong>. This ensures that (approximately) equal-sized batches are constructed in terms of tokens, while allowing the number of sequences per batch to differ.</p>
+<p>During model development and tuning, a validation split of 20,000 training instances and 5,000 validation instances is used. For the final test, a <strong>canonical test/train split</strong> of 25,000 instances each is applied. This design should <strong>prevent data leakage</strong> i.e. loss of robustness and misleadingly strong results due to accidentally fitting on test data.</p>
 <h2 id="models">Models</h2>
-<p>This report will explore RNN&rsquo;s (Recurrent Neural Networks). These deep learning models are characterized by their ability to &ldquo;remember&rdquo; previous inputs, allowing temporal dynamic behavior. This is beneficial in environments such as this classification where strong within-input dependencies are expected. In addition, RNN&rsquo;s also provide better compatibility with arbitrary-length sequences. In our experimentation, we compare 2 RNN variations, alongside an MLP. Furthermore, we apply an <a href="https://www.baeldung.com/cs/neural-nets-embedding-layers#:~:text=An%20embedding%20layer%20is%20a,process%20the%20data%20more%20efficiently.">Embedding layer</a> and <a href="https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/">ADAM</a> optimizer for all variations.</p>
+<p>This report will explore RNN&rsquo;s (Recurrent Neural Networks). These deep learning models are characterized by their ability to &ldquo;remember&rdquo; previous inputs, allowing temporal dynamic behaviour. This is beneficial in environments such as this classification where strong <strong>within-input dependencies</strong> are expected. In addition, RNN&rsquo;s also provide better compatibility with <strong>arbitrary-length sequences</strong>. In our experimentation, we compare 2 RNN variations, alongside an MLP. Furthermore, we apply an <a href="https://www.baeldung.com/cs/neural-nets-embedding-layers#:~:text=An%20embedding%20layer%20is%20a,process%20the%20data%20more%20efficiently.">Embedding layer</a> and <a href="https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/">ADAM</a> optimizer for all variations.</p>
 <ol>
 <li>
 <p><strong>MLP (Multilayer Perceptron):</strong> Often referred to as &ldquo;vanilla&rdquo; neural networks, these basic feed-forward models can be considered the bread and butter of deep learning. Our model will contain a single hidden layer.</p>
 </li>
 <li>
-<p><strong>Elman:</strong> This model applies an Elman layer. In addition to regular hidden layer properties, it also contains context units which hold information of previous iterations. Moreover, we also implemented a residual connection to counter exploding and <a href="https://towardsdatascience.com/the-vanishing-gradient-problem-69bf08b15484">vanishing gradients</a>.</p>
+<p><strong>Elman:</strong> This model applies an Elman layer. In addition to regular hidden layer properties, it also contains context units which hold information of previous iterations. Moreover, we also implemented a <strong>residual connection</strong> to counter <a href="https://towardsdatascience.com/the-vanishing-gradient-problem-69bf08b15484">exploding and vanishing gradients</a>.</p>
 </li>
 <li>
 <p><strong>LSTM (Long Short-Term Memory):</strong> This model is an RNN variation. In short, LSTM&rsquo;s main benefit is the &ldquo;conveyor belt&rdquo; consisting of only linear operations, avoiding gradient problems in the process. In addition, we also feed selected memory of the past to this belt through various &ldquo;gates&rdquo;.</p>
 </li>
 </ol>
 <p>
-  <img src="/img/2021_Sentiment_IMDb/architecture.jpg" alt="">
+  <img src="/img/2021_Sentiment_IMDb/lstm.jpg" alt="">
 
 </p>
 <h2 id="results">Results</h2>
-<p>Performance during the First Epoch of training:</p>
+<p>Performance during the First (and only) Epoch of training:</p>
 <p>
   <img src="/img/2021_Sentiment_IMDb/Accuracy_Development.jpg" alt="">
 
@@ -308,7 +315,7 @@
 <ul>
 <li>Due to time constraints, we limited training to a single epoch. Given the plots, it is reasonable to assume we have already largely converged, but this detail should not be ignored.</li>
 <li>Different type of hidden layers also displayed substantial performance differences (Sigmoid, Tanh), making it an additional potential driver of performance.</li>
-<li>Differences in Hyperparameter selection (particularly the <em>learning rate</em>) have strong effects on performance. For the LSTM, it even resulted in different model preferences amongst the training and validation set showing weak external validity and robustness of the (single-epoch) LSTM for the given hyperparameters .</li>
+<li>Differences in Hyperparameter selection (particularly the <strong>learning rate</strong>) have strong effects on performance. For the LSTM, it even resulted in different model preferences amongst the training and validation set showing weak <strong>external validity</strong> and robustness of the (single-epoch) LSTM for the given hyperparameters .</li>
 </ul>
 <table>
 <thead>
@@ -377,11 +384,6 @@
                 <hr>
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/post/_readme/" data-toggle="tooltip" data-placement="top" title="Clean White Theme for Hugo">&larr;
-                            Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
                         <a href="/post/2021_factor_ml_forecasting/" data-toggle="tooltip" data-placement="top" title="PCA Machine Learning Hybrid Models: Real Estate Forecasting">Next
@@ -429,6 +431,16 @@
                         
                         
                         
+                        <a href="/tags/bayesian-statistics" title="bayesian-statistics">
+                            bayesian-statistics
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/causal-inference" title="causal-inference">
+                            causal-inference
+                        </a>
+                        
                         
                         
                         <a href="/tags/classification" title="classification">
@@ -443,6 +455,10 @@
                         
                         
                         
+                        <a href="/tags/computer-science" title="computer-science">
+                            computer-science
+                        </a>
+                        
                         
                         
                         <a href="/tags/data-science" title="data-science">
@@ -450,6 +466,10 @@
                         </a>
                         
                         
+                        
+                        <a href="/tags/deep-learning" title="deep-learning">
+                            deep-learning
+                        </a>
                         
                         
                         
@@ -461,6 +481,12 @@
                         
                         <a href="/tags/econometrics" title="econometrics">
                             econometrics
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/experimentation" title="experimentation">
+                            experimentation
                         </a>
                         
                         
@@ -483,18 +509,20 @@
                         
                         
                         
+                        <a href="/tags/nlp" title="nlp">
+                            nlp
+                        </a>
                         
                         
                         
+                        <a href="/tags/panel-data" title="panel-data">
+                            panel-data
+                        </a>
                         
                         
                         
-                        
-                        
-                        
-                        
-                        <a href="/tags/text-analysis" title="text-analysis">
-                            text-analysis
+                        <a href="/tags/regression" title="regression">
+                            regression
                         </a>
                         
                         
@@ -575,15 +603,6 @@
             
             
            
-                   <li>
-                       <a href='' rel="alternate" type="application/rss+xml" title="Richie Lee" >
-                           <span class="fa-stack fa-lg">
-                               <i class="fas fa-circle fa-stack-2x"></i>
-                               <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
-                           </span>
-                       </a>
-                   </li>
-            
              </ul>
 		<p class="copyright text-muted">
                     Copyright &copy; Richie Lee 2023

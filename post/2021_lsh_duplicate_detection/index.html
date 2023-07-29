@@ -21,9 +21,9 @@
     
 
     
-    <meta name="description" content="This article explores the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques.">
-    <meta property="og:description" content="This article explores the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques." />
-    <meta property="twitter:description" content="This article explores the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques." />
+    <meta name="description" content="This article explores the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis, embedding and alternative information compressing techniques.">
+    <meta property="og:description" content="This article explores the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis, embedding and alternative information compressing techniques." />
+    <meta property="twitter:description" content="This article explores the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis, embedding and alternative information compressing techniques." />
     
 
     
@@ -182,8 +182,8 @@
                             Clustering
                         </a>
                         
-                        <a class="tag" href="/tags/text-analysis" title="Text analysis">
-                            Text analysis
+                        <a class="tag" href="/tags/nlp" title="NLP">
+                            NLP
                         </a>
                         
                         <a class="tag" href="/tags/dimension-reduction" title="Dimension Reduction">
@@ -192,7 +192,7 @@
                         
                     </div>
                     <h1>Scalable Duplicate Detection &amp; Text Analysis: Ecommerce Products</h1>
-                    <h2 class="subheading">Sentiment Classification with Recurrent Neural Networks</h2>
+                    <h2 class="subheading">Leveraging NLP and dimension reduction techniques to efficiently identify candidate pairs for consequent duplicate classifications</h2>
                     <span class="meta">
                         
                             Posted by 
@@ -200,7 +200,7 @@
                                 Richie
                              
                             on 
-                            Tuesday, December 21, 2021
+                            Wednesday, December 1, 2021
                             
                             
                             
@@ -275,7 +275,7 @@
 <li>1080p</li>
 <li>&hellip;</li>
 </ul>
-<p>To reduce the computational burden (by a lot!), we convert these vectors into <strong>sparse vectors</strong> that only store the indices of present shingles. By collecting all shingle sparse vectors, we construct a <strong>Sparse Matrix (S)</strong>.</p>
+<p>To reduce the computational burden (by a lot!), we convert these vectors into <strong>sparse vectors</strong> that only store the indices of present shingles which reducing the matrix size from approximately 10.000 to 100. By collecting all shingle sparse vectors, we construct a <strong>Sparse Matrix (S)</strong>.</p>
 <p>To approximate similarity between products, we shuffle the list of shingle indices and iterate over the shuffled vector. For each iteration, we check whether the index is present in the current product&rsquo;s sparse vector. Once we find a match, we save the number of iterations required to find the first match. This process is repeated for every product, resulting in a collection of permutations known as the <strong>Signature Matrix</strong>. It serves as a compact representation of all product titles.</p>
 <h3 id="preprocessing-step-2-identifying-and-bucketing-candidate-pairs">Preprocessing step 2: Identifying and bucketing candidate pairs</h3>
 <p>If multiple products share the same iteration value for a given permutation, it indicates that they have a common shingle. We leverage this information by distributing products into <strong>buckets</strong> based on their respective iteration values. Products with common shingles are assigned to the same bucket.</p>
@@ -342,7 +342,7 @@
                     
                     
                     <li class="next">
-                        <a href="/post/2022_heterogeneity_ah/" data-toggle="tooltip" data-placement="top" title="Modelling Unobserved Heterogeneity: Albert Heijn (Ahold Delhaize)">Next
+                        <a href="/post/2022_heterogeneity_ah/" data-toggle="tooltip" data-placement="top" title="Econometric Panel Data Modelling: Albert Heijn (Ahold Delhaize)">Next
                             Post &rarr;</a>
                     </li>
                     
@@ -387,6 +387,16 @@
                         
                         
                         
+                        <a href="/tags/bayesian-statistics" title="bayesian-statistics">
+                            bayesian-statistics
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/causal-inference" title="causal-inference">
+                            causal-inference
+                        </a>
+                        
                         
                         
                         <a href="/tags/classification" title="classification">
@@ -401,6 +411,10 @@
                         
                         
                         
+                        <a href="/tags/computer-science" title="computer-science">
+                            computer-science
+                        </a>
+                        
                         
                         
                         <a href="/tags/data-science" title="data-science">
@@ -408,6 +422,10 @@
                         </a>
                         
                         
+                        
+                        <a href="/tags/deep-learning" title="deep-learning">
+                            deep-learning
+                        </a>
                         
                         
                         
@@ -419,6 +437,12 @@
                         
                         <a href="/tags/econometrics" title="econometrics">
                             econometrics
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/experimentation" title="experimentation">
+                            experimentation
                         </a>
                         
                         
@@ -441,18 +465,20 @@
                         
                         
                         
+                        <a href="/tags/nlp" title="nlp">
+                            nlp
+                        </a>
                         
                         
                         
+                        <a href="/tags/panel-data" title="panel-data">
+                            panel-data
+                        </a>
                         
                         
                         
-                        
-                        
-                        
-                        
-                        <a href="/tags/text-analysis" title="text-analysis">
-                            text-analysis
+                        <a href="/tags/regression" title="regression">
+                            regression
                         </a>
                         
                         
@@ -533,15 +559,6 @@
             
             
            
-                   <li>
-                       <a href='' rel="alternate" type="application/rss+xml" title="Richie Lee" >
-                           <span class="fa-stack fa-lg">
-                               <i class="fas fa-circle fa-stack-2x"></i>
-                               <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
-                           </span>
-                       </a>
-                   </li>
-            
              </ul>
 		<p class="copyright text-muted">
                     Copyright &copy; Richie Lee 2023

@@ -2,31 +2,29 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Clustering on Richie Lee</title>
-    <link>https://richie-lee.github.io/tags/clustering/</link>
+    <link>/tags/clustering/</link>
     <description>Recent content in Clustering on Richie Lee</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 15 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://richie-lee.github.io/tags/clustering/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 01 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="/tags/clustering/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Modelling Unobserved Heterogeneity: Albert Heijn (Ahold Delhaize)</title>
-      <link>https://richie-lee.github.io/post/2022_heterogeneity_ah/</link>
-      <pubDate>Sun, 15 May 2022 00:00:00 +0000</pubDate>
+      <title>Econometric Panel Data Modelling: Albert Heijn (Ahold Delhaize)</title>
+      <link>/post/2022_heterogeneity_ah/</link>
+      <pubDate>Sun, 01 May 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://richie-lee.github.io/post/2022_heterogeneity_ah/</guid>
+      <guid>/post/2022_heterogeneity_ah/</guid>
       <description>TL:DR In collaboration with Albert Heijn, this study explores the dynamics between product labels and consumer buying behaviour. The study successfully addressed the challenges posed by panel data, such as unobserved heterogeneity, omitted variable bias, and seasonality, demonstrating the usefulness of the micro-econometric toolkit.
-The positive reception of the findings and methodologies led to an invitation to present the results at Albert Heijn&amp;rsquo;s Data Science department&amp;rsquo;s Knowledge Exchange initiative.
-Context In the competitive landscape of the supermarket industry, understanding consumer behaviour is crucial for Dutch market leader Albert Heijn (Ahold Delhaize) in developing effective strategies to improve revenue and profitability.</description>
+The positive reception of the findings and methodologies led to an invitation to present the results at Albert Heijn&amp;rsquo;s Data Science department&amp;rsquo;s Knowledge Exchange initiative. The main contribution of the study is the proof-of-concept and simplifiction of micro-econometric methods for these specific use-cases.</description>
     </item>
     
     <item>
       <title>Scalable Duplicate Detection &amp; Text Analysis: Ecommerce Products</title>
-      <link>https://richie-lee.github.io/post/2021_lsh_duplicate_detection/</link>
-      <pubDate>Tue, 21 Dec 2021 00:00:00 +0000</pubDate>
+      <link>/post/2021_lsh_duplicate_detection/</link>
+      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://richie-lee.github.io/post/2021_lsh_duplicate_detection/</guid>
+      <guid>/post/2021_lsh_duplicate_detection/</guid>
       <description>TL:DR This article explore the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques.
-The overall approach is summarised in the following diagram: [insert big overview]
-Context With the ever increasing relevance of online shopping and customers are becoming more comfortable with online platforms with user experience therefore playing a crucial role in driving sales and preventing churn.</description>
+The overall approach is summarised in the following diagram: Context With the ever increasing relevance of online shopping and customers are becoming more comfortable with online platforms with user experience therefore playing a crucial role in driving sales and preventing churn.</description>
     </item>
     
   </channel>
