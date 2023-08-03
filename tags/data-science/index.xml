@@ -38,6 +38,16 @@ The methods considered follow Kim &amp;amp; Swanson (2018) hybrid model design, 
     </item>
     
     <item>
+      <title>Deep Reinforcement Learning - Game Automation</title>
+      <link>/post/2021_reinforcement/</link>
+      <pubDate>Sat, 01 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2021_reinforcement/</guid>
+      <description>TL:DR This post contains a brief introduction to deep-learning based reinforcement learning in the form of simple/standard REINFORCE, Actor-Critic (A2C) and Deep Q-learning (DQN) algorithms with a few extensions. When tackling the CartPole-v1 problem, an open-source playground example by OpenAI, we compare the models in terms of game performance, stability and compute. The code was written using Python with PyTorch.
+Introduction: Reinforcement Learning (RL) Reinforcement learning (RL) is a machine learning strategy where an agent learns decision-making skills by moving from state to state by interacting with an closed environment without relying on any data.</description>
+    </item>
+    
+    <item>
       <title>RNN Sentiment Classification: Movie Reviews</title>
       <link>/post/2021_rnn_sentiment_classifier/</link>
       <pubDate>Thu, 01 Apr 2021 00:00:00 +0000</pubDate>

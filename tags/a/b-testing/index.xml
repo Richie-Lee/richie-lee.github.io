@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>A/B Testing on Richie Lee</title>
+    <link>/tags/a/b-testing/</link>
+    <description>Recent content in A/B Testing on Richie Lee</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="/tags/a/b-testing/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bayesian A/B Testing with Early Stopping: JustEatTakeaway.com</title>
+      <link>/post/2023_bayesian_ab_testing/</link>
+      <pubDate>Sat, 01 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2023_bayesian_ab_testing/</guid>
+      <description>TL:DR This post covers Bayesian A/B Testing, an alternative solution to designing cost-efficient experiments while preserving strength of evidence. To demonstrate and explain the basic concept, readers are referred to the brief introduction and simple implementation (Jupyter Notebook) further down below. Feel free to play around with the actual thing following the link here.
+Introduction A/B testing has become a cornerstone in the digital age for identifying and measuring causal effects.</description>
+    </item>
+    
+  </channel>
+</rss>

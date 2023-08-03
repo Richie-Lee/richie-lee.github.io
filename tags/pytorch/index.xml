@@ -2,19 +2,28 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>PyTorch on Richie Lee</title>
-    <link>https://richie-lee.github.io/tags/pytorch/</link>
+    <link>/tags/pytorch/</link>
     <description>Recent content in PyTorch on Richie Lee</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 25 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://richie-lee.github.io/tags/pytorch/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 01 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/pytorch/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Sentiment Classification: Movie Reviews</title>
-      <link>https://richie-lee.github.io/post/2021_rnn_sentiment_classifier/</link>
-      <pubDate>Sun, 25 Apr 2021 00:00:00 +0000</pubDate>
+      <title>Deep Reinforcement Learning - Game Automation</title>
+      <link>/post/2021_reinforcement/</link>
+      <pubDate>Sat, 01 May 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://richie-lee.github.io/post/2021_rnn_sentiment_classifier/</guid>
-      <description>Context The objective is to accurately identify whether a movie was positively or negatively received through text reviews from IMDb. This is a process that is often referred to as Sentiment Classification. Though seemingly trivial, there were multiple aspects that made this problem more challenging:
-Input data size is not consistent (different review lengths) Small differences are often relevant, ruling out standard similarity methods There are a lot of distinct dependencies across words Time constraints: 1 week for coding &amp;amp; reporting Data Amazons IMDb (Internet Movie Database) is known as the world&amp;rsquo;s most popular source for movie reviews.</description>
+      <guid>/post/2021_reinforcement/</guid>
+      <description>TL:DR This post contains a brief introduction to deep-learning based reinforcement learning in the form of simple/standard REINFORCE, Actor-Critic (A2C) and Deep Q-learning (DQN) algorithms with a few extensions. When tackling the CartPole-v1 problem, an open-source playground example by OpenAI, we compare the models in terms of game performance, stability and compute. The code was written using Python with PyTorch.
+Introduction: Reinforcement Learning (RL) Reinforcement learning (RL) is a machine learning strategy where an agent learns decision-making skills by moving from state to state by interacting with an closed environment without relying on any data.</description>
+    </item>
+    
+    <item>
+      <title>RNN Sentiment Classification: Movie Reviews</title>
+      <link>/post/2021_rnn_sentiment_classifier/</link>
+      <pubDate>Thu, 01 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2021_rnn_sentiment_classifier/</guid>
+      <description>TL:DR The objective is to accurately identify whether a movie was positively or negatively received through text reviews from IMDb. This is a common NLP challenge that is known as Sentiment Classification. The proposed algorithm is a Recurrent Neural Network (RNN). Especially the ability to capture complex relations and sequential dependencies in text data is what becomes valuable here. In this brief post, a well-known RNN implementation, a LSTM, is benchmarked against other deep learning implementations and checked for robustness.</description>
     </item>
     
   </channel>
