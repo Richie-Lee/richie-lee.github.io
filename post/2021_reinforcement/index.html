@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Richie Lee">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="/img/2021_Reinforcement/wallpaper_ml.jpg">
+    <meta property="twitter:image" content="/img/2021_Reinforcement/wallpaper_ml.jpg" />
+    
+
+    
+    <meta name="title" content="Deep Reinforcement Learning - Game Automation" />
+    <meta property="og:title" content="Deep Reinforcement Learning - Game Automation" />
+    <meta property="twitter:title" content="Deep Reinforcement Learning - Game Automation" />
+    
+
+    
+    <meta name="description" content="This post briefly introduces deep-learning based reinforcement learning, covering three algorithms: Simple/Standard REINFORCE, Actor-Critic (A2C), and Deep Q-learning (DQN). We evaluate these models on the CartPole-v1 problem (open-source by OpenAI) whilst comparing their game performance, stability, and computational efficiency. The implementation uses Python (PyTorch).">
+    <meta property="og:description" content="This post briefly introduces deep-learning based reinforcement learning, covering three algorithms: Simple/Standard REINFORCE, Actor-Critic (A2C), and Deep Q-learning (DQN). We evaluate these models on the CartPole-v1 problem (open-source by OpenAI) whilst comparing their game performance, stability, and computational efficiency. The implementation uses Python (PyTorch)." />
+    <meta property="twitter:description" content="This post briefly introduces deep-learning based reinforcement learning, covering three algorithms: Simple/Standard REINFORCE, Actor-Critic (A2C), and Deep Q-learning (DQN). We evaluate these models on the CartPole-v1 problem (open-source by OpenAI) whilst comparing their game performance, stability, and computational efficiency. The implementation uses Python (PyTorch)." />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="Microservice, Deep Learning">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Deep Reinforcement Learning - Game Automation | Personal Webpage</title>
+
+    <link rel="canonical" href="/post/2021_reinforcement/">
+
+    
+    
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link rel="stylesheet" href="/css/font-awesome.all.min.css">
+
+    
+    
+
+    
+    <script src="/js/jquery.min.js"></script>
+
+    
+    <script src="/js/bootstrap.min.js"></script>
+
+    
+    <script src="/js/hux-blog.min.js"></script>
+
+    
+    <script src="/js/lazysizes.min.js"></script>
+
+    
+    
+
+</head>
+
+
+
+
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Richie Lee</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">All Posts</a>
+                    </li>
+                    
+                        
+                        <li>
+                            <a href="/categories/projects/">projects</a>
+                        </li>
+                        
+                    
+                    
+		    
+                        <li><a href="/about//">ABOUT</a></li>
+                    
+		            <li>
+                        <a href="/search"><i class="fa fa-search"></i></a>
+		           </li>
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('/img/2021_Reinforcement/wallpaper_ml.jpg')
+    }
+</style>
+
+<header class="intro-header" >
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/deep-learning" title="Deep Learning">
+                            Deep Learning
+                        </a>
+                        
+                        <a class="tag" href="/tags/data-science" title="Data Science">
+                            Data Science
+                        </a>
+                        
+                        <a class="tag" href="/tags/machine-learning" title="Machine Learning">
+                            Machine Learning
+                        </a>
+                        
+                        <a class="tag" href="/tags/pytorch" title="PyTorch">
+                            PyTorch
+                        </a>
+                        
+                        <a class="tag" href="/tags/reinforcement-learning" title="Reinforcement Learning">
+                            Reinforcement Learning
+                        </a>
+                        
+                    </div>
+                    <h1>Deep Reinforcement Learning - Game Automation</h1>
+                    <h2 class="subheading">Automated decision-strategies for the CartPole-V1 game (OpenAI) using Reinforcement Learning empowered by Deep Learning</h2>
+                    <span class="meta">
+                        
+                            Posted by 
+                            
+                                Richie (contributor)
+                             
+                            on 
+                            Saturday, May 1, 2021
+                            
+                            
+                            
+                            
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <h2 id="tldr">TL:DR</h2>
+<p><em>This post contains a brief introduction to deep-learning based reinforcement learning in the form of simple/standard REINFORCE, Actor-Critic (A2C) and Deep Q-learning (DQN) algorithms with a few extensions. When tackling the CartPole-v1 problem, an open-source playground example by OpenAI, we compare the models in terms of game performance, stability and compute. The code was written using Python with PyTorch.</em></p>
+<hr>
+<h2 id="introduction-reinforcement-learning-rl">Introduction: Reinforcement Learning (RL)</h2>
+<p>Reinforcement learning (RL) is a machine learning strategy where an agent learns decision-making skills by moving from <em>state</em> to state by interacting with an closed <em>environment</em> without relying on any data. The <em>agent</em> takes <em>actions</em> and receives feedback in the form of <em>rewards</em> or penalties while eventually fitting/converging towards an optimal <em>policy</em> (set of decisions) as it cumulatively maximises reward over time. A resource I found really helpful to understand the mathematics are the videos of this lecture <a href="https://www.youtube.com/watch?v=t1I4NQTRXA0&amp;pp=ygUSZGx2dSByZWluZm9yY2VtZW50">video(s)</a>.</p>
+<p>The fundamental components of reinforcement learning are:</p>
+<ol>
+<li>
+<p><strong>Agent</strong>: The learner or decision-maker that engages with the environment, making choices based on its current knowledge.</p>
+</li>
+<li>
+<p><strong>Environment</strong>: The external system with which the agent interacts, providing feedback in the form of rewards or penalties based on the agent&rsquo;s actions.</p>
+</li>
+<li>
+<p><strong>State</strong>: A representation of the environment&rsquo;s current situation, enabling the agent to make informed decisions.</p>
+</li>
+<li>
+<p><strong>Action</strong>: The decisions made by the agent to influence the environment and achieve its goals.</p>
+</li>
+<li>
+<p><strong>Reward</strong>: The feedback provided by the environment after each action, serving as a signal to the agent about the goodness or undesirability of its chosen action.</p>
+</li>
+</ol>
+<p>
+  <img src="/img/2021_Reinforcement/environment_agent.gif" alt="">
+
+</p>
+<p>Reinforcement learning&rsquo;s most well known success has been in gaming (e.g. <a href="https://www.chess.com/terms/stockfish-chess-engine">Stockfish</a> the Chess-engine) but is rapidly gaining attention for lots of other use-cases too such as robotics, recommendation systems, and autonomous vehicles, and recently surprisingly but really excitingly - even in A/B testing (<a href="https://arxiv.org/abs/2304.00420">Wan et al (2023)</a>)!</p>
+<h2 id="environment">Environment</h2>
+<p>The <strong>CartPole-v1</strong> game is an open-source sandbox example offered by <a href="https://gymnasium.farama.org/">OpenAI</a> for Reinforcement Learning (RL) algorithm training and involves an <strong>agent</strong> represented by a cart. The cart can be controlled using two possible <strong>actions</strong>: +1 or -1, which correspond to moving left or right, respectively.</p>
+<p>In this environment, the agent receives a <strong>reward</strong> of +1 at each timestep when the pole remains upright. The primary objective is to prevent the pole from falling over, aiming to maximize the cumulative reward over time.</p>
+<p>
+  <img src="/img/2021_Reinforcement/Cartpole.gif" alt="">
+
+</p>
+<h2 id="methodology">Methodology</h2>
+<h3 id="simplestandard-reinforce">Simple/Standard REINFORCE</h3>
+<p>This basic RL algorithm can be considered a &ldquo;vanilla&rdquo; version.  It involves a policy network that simply selects actions based on the environment&rsquo;s current state. The agent uses the REINFORCE method, which does not perform <strong>credit assignment</strong> and evenly increases the log-probabilities of all actions that lead to higher total (expected) rewards. Though simple and handy for initial testing, it does suffer from high variance during training due to its lack of credit assignment.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>Input → Linear(<span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">128</span>) → ReLU → Linear(<span style="color:#bd93f9">128</span>, <span style="color:#bd93f9">128</span>) → ReLU → Linear(<span style="color:#bd93f9">128</span>, <span style="color:#bd93f9">2</span>) → Softmax → Output<span style="color:#ff79c6">.</span>
+</span></span></code></pre></div><h3 id="advantage-actor-critic-a2c">Advantage Actor-Critic (A2C)</h3>
+<p>A2C models combine value-based and policy-based methods using an <strong>actor</strong> and a <strong>critic</strong>. The actor selects actions based on the environment&rsquo;s state and outputs action probabilities, while the critic estimates the state-value function to evaluate whether the action was good or bad to consequently guide the actor&rsquo;s next decisions. By introducing a critic, A2C addresses the high variance issue in the simple REINFORCE algorithm. The policy network shares its initial layers with the critic network, facilitating feature extraction and reducing computational costs. The architecture consists of two branches: one for the actor and one for the critic.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>Input → Linear(<span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">128</span>) → ReLU → Linear(<span style="color:#bd93f9">128</span>, <span style="color:#bd93f9">2</span>) → Softmax → Output   (Actor)
+</span></span><span style="display:flex;"><span>                              → Linear(<span style="color:#bd93f9">128</span>, <span style="color:#bd93f9">1</span>)                      (Critic)
+</span></span></code></pre></div><h3 id="deep-q-learning-dqn">Deep Q-Learning (DQN)</h3>
+<p>Q learning estimates the quality (<strong>Q-value</strong>) of a specific action in a given state and updates these values through an <strong>exploration-exploitation strategy</strong>. Some sources that turned out to be super helpful were this <a href="https://deeplizard.com/learn/video/wrBUkpiRvCA">blog</a> (deeplizard.com) alongside some PyTorch <a href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html">Documentation</a>.</p>
+<p>
+  <img src="/img/2021_Reinforcement/DeepQ.jpg" alt="">
+
+</p>
+<p>By default, these algorithms use Bellman equations, however in this implementation Deep Q-learning (DQN) it uses a neural network to represent the Q-function. The <strong>neural network</strong> takes the state as input and outputs the Q-values for all possible actions, allowing DQN to handle environments with large and continuous state spaces significantly more effectively. Additionally, we implement the following characteristics:</p>
+<ul>
+<li><strong>Epsilon-greedy algorithm</strong> balances explorations and exploitation, by introducing a non-zero probability of deviating from optimal and choosing a random option, while gradually reducing the exploration rate over episodes.</li>
+<li><strong>Experience Replay</strong>  helps the agent to learn from a more diverse set of experiences and improves the stability of training</li>
+<li><strong>Target Network</strong> stabilizes training by reducing the divergence that may occur when updating the Q-values using the same network</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>Input → Linear(<span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">128</span>) → ReLU → Linear(<span style="color:#bd93f9">128</span>, <span style="color:#bd93f9">128</span>) → ReLU → Linear(<span style="color:#bd93f9">128</span>, <span style="color:#bd93f9">2</span>) → Output<span style="color:#ff79c6">.</span>
+</span></span></code></pre></div><h2 id="results">Results</h2>
+<p>During training and performance evaluation, we observe our three model variations over multiple <strong>episodes</strong> (game repetitions). We measure performance using <strong>episode length</strong>, representing the number of timesteps until the CartPole falls over. Due to the illustrative nature of this exercise, we do not extensively perform hyperparameter tuning. Instead, we aim for a &ldquo;decent&rdquo; performance that is representative enough to understand reinforcement learning development.</p>
+<p>A2C achieves the best performance (489.0) with a learning rate of α = 0.003. Standard REINFORCE follows closely with a score of 481.6 at α = 0.001.</p>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>α = 0.0001</th>
+<th>α = 0.0003</th>
+<th>α = 0.001</th>
+<th>α = 0.003</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple REINFORCE</td>
+<td>27.8</td>
+<td><strong>30.4</strong></td>
+<td>28.5</td>
+<td>25.5</td>
+</tr>
+<tr>
+<td>Standard REINFORCE</td>
+<td>195.7</td>
+<td>418.3</td>
+<td><strong>481.6</strong></td>
+<td>329.2</td>
+</tr>
+<tr>
+<td>A2C</td>
+<td>41.4</td>
+<td>190.9</td>
+<td>453.5</td>
+<td><strong>489.0</strong></td>
+</tr>
+<tr>
+<td>DQN1</td>
+<td>284.2</td>
+<td><strong>285.9</strong></td>
+<td>267.5</td>
+<td>272.1</td>
+</tr>
+<tr>
+<td>DQN2</td>
+<td><strong>323.2</strong></td>
+<td>257.2</td>
+<td>260.8</td>
+<td>201.8</td>
+</tr>
+<tr>
+<td>DQN3</td>
+<td>228.2</td>
+<td>365.7</td>
+<td><strong>371.6</strong></td>
+<td>293.8</td>
+</tr>
+</tbody>
+</table>
+<p>The figures illustrate the episode performance (vertical axis) over episodes of training (horizontal axis). A2C demonstrates notably less volatility compared to standard REINFORCE, which exhibits higher variance. Simple Reinforce performs the worst in terms of stability. DQN with experience replay and target network achieves relatively low volatility, but its overall game performance is inferior to REINFORCE and A2C. Notably, all lines show an upward trend, indicating that longer training times could lead to significant improvements in the models, potentially influencing model selection.</p>
+<p>
+  <img src="/img/2021_Reinforcement/all_plots.jpg" alt="">
+
+</p>
+<p>For deep Q-learning, both experience replay (middle plot) and target networks (right plot) lead to higher scores, but experience replay seems unstable except at a low learning rate of α=0.0001. Though this may be due to a limited training duration, it may hint towards a hyperparameter sensitivity challenge.</p>
+<p>
+  <img src="/img/2021_Reinforcement/all_dqn.jpg" alt="">
+
+</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>For this specific use-case (which is not safe to assume to generalise), A2C performed the best in terms of stability and episode lengths, that is, within these prespecified training times. However, given the more computationally favorable Simple REINFORCE, it can also be preferred depending on the researchers priorities.</p>
+<p>Note that the study&rsquo;s conclusions should be taken with a grain of salt, as we should be be mindful of limitations such as:</p>
+<ul>
+<li>Hyperparameter tuning were not prioritised, but are definitely capable of changing performance completely, even with small changes.</li>
+<li>One-to-one comparisons cannot be made between REINFORCE, DQN and Advantage Actor
+Critic, because while the amount of episodes is the same, the amount of times the parameters gets updated
+do not. In REINFORCE and Advantage Actor Critic the parameters are updated after each episode, while
+with DQN this is done after each step because it is an online algorithm</li>
+<li>Most models likely didn&rsquo;t converge yet in the prespecified training duration (decision due to time constraints). Longer training times may change the comparisons conclusions too.</li>
+</ul>
+<p><strong>Final remark</strong></p>
+<p><em>Though practical application of this specific post is limited, aside from educational purposes perhaps. Especially considering the rate at which the field is advancing (Time of writing &amp; coding this thing: 2021). Nevertheless, I think it was a great foundation to better understand deep-learning based reinforcement learning for potential future related projects. Thanks for reading, and thanks to my two collaborators (and great friends) for their contributions and for making the project an overall really fun experience!</em></p>
+<h2 id="code-snippets-python--pytorch">Code Snippets (Python / PyTorch)</h2>
+<p><strong>Actor-Critic (A2C)</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#6272a4"># Importing required libraries</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> gym
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> numpy <span style="color:#ff79c6">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> matplotlib.pyplot <span style="color:#ff79c6">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> collections <span style="color:#ff79c6">import</span> namedtuple
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> torch.nn <span style="color:#ff79c6">as</span> nn
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> torch.nn.functional <span style="color:#ff79c6">as</span> F
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> torch.optim <span style="color:#ff79c6">as</span> optim
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> torch.distributions <span style="color:#ff79c6">import</span> Categorical
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Define a named tuple for saving actions and values</span>
+</span></span><span style="display:flex;"><span>SavedAction <span style="color:#ff79c6">=</span> namedtuple(<span style="color:#f1fa8c">&#39;SavedAction&#39;</span>, [<span style="color:#f1fa8c">&#39;log_prob&#39;</span>, <span style="color:#f1fa8c">&#39;value&#39;</span>])
+</span></span><span style="display:flex;"><span>eps <span style="color:#ff79c6">=</span> np<span style="color:#ff79c6">.</span>finfo(np<span style="color:#ff79c6">.</span>float32)<span style="color:#ff79c6">.</span>eps<span style="color:#ff79c6">.</span>item()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Define the Policy network for Actor-Critic</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Policy</span>(nn<span style="color:#ff79c6">.</span>Module):
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">def</span> __init__(self, num_inputs<span style="color:#ff79c6">=</span><span style="color:#bd93f9">4</span>, num_actions<span style="color:#ff79c6">=</span><span style="color:#bd93f9">2</span>, hidden_size<span style="color:#ff79c6">=</span><span style="color:#bd93f9">128</span>, learning_rate<span style="color:#ff79c6">=</span><span style="color:#bd93f9">0.003</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">super</span>(Policy, self)<span style="color:#ff79c6">.</span>__init__()
+</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>linear1 <span style="color:#ff79c6">=</span> nn<span style="color:#ff79c6">.</span>Linear(num_inputs, hidden_size)
+</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>actor <span style="color:#ff79c6">=</span> nn<span style="color:#ff79c6">.</span>Linear(hidden_size, num_actions)
+</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>critic <span style="color:#ff79c6">=</span> nn<span style="color:#ff79c6">.</span>Linear(hidden_size, <span style="color:#bd93f9">1</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>optimizer <span style="color:#ff79c6">=</span> optim<span style="color:#ff79c6">.</span>Adam(self<span style="color:#ff79c6">.</span>parameters(), learning_rate)
+</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>saved_actions <span style="color:#ff79c6">=</span> []
+</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>rewards <span style="color:#ff79c6">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">forward</span>(self, x):
+</span></span><span style="display:flex;"><span>        x <span style="color:#ff79c6">=</span> F<span style="color:#ff79c6">.</span>relu(self<span style="color:#ff79c6">.</span>linear1(x))
+</span></span><span style="display:flex;"><span>        action_prob <span style="color:#ff79c6">=</span> F<span style="color:#ff79c6">.</span>softmax(self<span style="color:#ff79c6">.</span>actor(x), dim<span style="color:#ff79c6">=-</span><span style="color:#bd93f9">1</span>)
+</span></span><span style="display:flex;"><span>        state_values <span style="color:#ff79c6">=</span> self<span style="color:#ff79c6">.</span>critic(x)
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> action_prob, state_values
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Function to select action using the Policy network</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">select_action</span>(s, model):
+</span></span><span style="display:flex;"><span>    s <span style="color:#ff79c6">=</span> torch<span style="color:#ff79c6">.</span>from_numpy(s)<span style="color:#ff79c6">.</span>float()
+</span></span><span style="display:flex;"><span>    probs, state_value <span style="color:#ff79c6">=</span> model(s)
+</span></span><span style="display:flex;"><span>    pi <span style="color:#ff79c6">=</span> Categorical(probs)
+</span></span><span style="display:flex;"><span>    a <span style="color:#ff79c6">=</span> pi<span style="color:#ff79c6">.</span>sample()
+</span></span><span style="display:flex;"><span>    model<span style="color:#ff79c6">.</span>saved_actions<span style="color:#ff79c6">.</span>append(SavedAction(pi<span style="color:#ff79c6">.</span>log_prob(a), state_value))
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> a<span style="color:#ff79c6">.</span>item()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Function to compute the advantage and perform backpropagation for A2C</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">finish_episode</span>(model):
+</span></span><span style="display:flex;"><span>    Gamma <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0.98</span>
+</span></span><span style="display:flex;"><span>    R <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+</span></span><span style="display:flex;"><span>    saved_actions <span style="color:#ff79c6">=</span> model<span style="color:#ff79c6">.</span>saved_actions
+</span></span><span style="display:flex;"><span>    policy_losses <span style="color:#ff79c6">=</span> []
+</span></span><span style="display:flex;"><span>    value_losses <span style="color:#ff79c6">=</span> []
+</span></span><span style="display:flex;"><span>    discounted_rewards <span style="color:#ff79c6">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">for</span> r <span style="color:#ff79c6">in</span> model<span style="color:#ff79c6">.</span>rewards[::<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>]:
+</span></span><span style="display:flex;"><span>        R <span style="color:#ff79c6">=</span> r <span style="color:#ff79c6">+</span> Gamma <span style="color:#ff79c6">*</span> R
+</span></span><span style="display:flex;"><span>        discounted_rewards<span style="color:#ff79c6">.</span>insert(<span style="color:#bd93f9">0</span>, R)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    discounted_rewards <span style="color:#ff79c6">=</span> torch<span style="color:#ff79c6">.</span>tensor(discounted_rewards)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Normalize the discounted rewards</span>
+</span></span><span style="display:flex;"><span>    discounted_rewards <span style="color:#ff79c6">=</span> (discounted_rewards <span style="color:#ff79c6">-</span> discounted_rewards<span style="color:#ff79c6">.</span>mean()) <span style="color:#ff79c6">/</span> (discounted_rewards<span style="color:#ff79c6">.</span>std() <span style="color:#ff79c6">+</span> eps)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">for</span> (log_prob, value), R <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">zip</span>(saved_actions, discounted_rewards):
+</span></span><span style="display:flex;"><span>        advantage <span style="color:#ff79c6">=</span> R <span style="color:#ff79c6">-</span> value<span style="color:#ff79c6">.</span>item()
+</span></span><span style="display:flex;"><span>        policy_losses<span style="color:#ff79c6">.</span>append(<span style="color:#ff79c6">-</span>log_prob <span style="color:#ff79c6">*</span> advantage)
+</span></span><span style="display:flex;"><span>        value_losses<span style="color:#ff79c6">.</span>append(F<span style="color:#ff79c6">.</span>smooth_l1_loss(value, torch<span style="color:#ff79c6">.</span>tensor([R])))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    model<span style="color:#ff79c6">.</span>optimizer<span style="color:#ff79c6">.</span>zero_grad()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Compute the overall loss and perform backpropagation</span>
+</span></span><span style="display:flex;"><span>    loss <span style="color:#ff79c6">=</span> torch<span style="color:#ff79c6">.</span>stack(policy_losses)<span style="color:#ff79c6">.</span>sum() <span style="color:#ff79c6">+</span> torch<span style="color:#ff79c6">.</span>stack(value_losses)<span style="color:#ff79c6">.</span>sum()
+</span></span><span style="display:flex;"><span>    loss<span style="color:#ff79c6">.</span>backward()
+</span></span><span style="display:flex;"><span>    model<span style="color:#ff79c6">.</span>optimizer<span style="color:#ff79c6">.</span>step()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Reset rewards and action buffer for the next episode</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">del</span> model<span style="color:#ff79c6">.</span>rewards[:]
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">del</span> model<span style="color:#ff79c6">.</span>saved_actions[:]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Main function to train the A2C model and plot the results</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">main</span>():
+</span></span><span style="display:flex;"><span>    avg_numsteps_run <span style="color:#ff79c6">=</span> []
+</span></span><span style="display:flex;"><span>    runs <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">5</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">for</span> run <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(runs):
+</span></span><span style="display:flex;"><span>        model <span style="color:#ff79c6">=</span> Policy()
+</span></span><span style="display:flex;"><span>        env <span style="color:#ff79c6">=</span> gym<span style="color:#ff79c6">.</span>make(<span style="color:#f1fa8c">&#39;CartPole-v1&#39;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">for</span> name, module <span style="color:#ff79c6">in</span> model<span style="color:#ff79c6">.</span>named_children():
+</span></span><span style="display:flex;"><span>            module<span style="color:#ff79c6">.</span>reset_parameters()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        max_episodes <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1000</span>
+</span></span><span style="display:flex;"><span>        max_steps <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">500</span>
+</span></span><span style="display:flex;"><span>        numsteps <span style="color:#ff79c6">=</span> []
+</span></span><span style="display:flex;"><span>        avg_numsteps <span style="color:#ff79c6">=</span> []  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">for</span> episode <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(max_episodes):
+</span></span><span style="display:flex;"><span>            s <span style="color:#ff79c6">=</span> env<span style="color:#ff79c6">.</span>reset()
+</span></span><span style="display:flex;"><span>            steps <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">for</span> t <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(max_steps):
+</span></span><span style="display:flex;"><span>                a <span style="color:#ff79c6">=</span> select_action(s, model)
+</span></span><span style="display:flex;"><span>                s, r, done, _ <span style="color:#ff79c6">=</span> env<span style="color:#ff79c6">.</span>step(a)
+</span></span><span style="display:flex;"><span>                model<span style="color:#ff79c6">.</span>rewards<span style="color:#ff79c6">.</span>append(r)
+</span></span><span style="display:flex;"><span>                steps <span style="color:#ff79c6">+=</span> r
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">if</span> done:
+</span></span><span style="display:flex;"><span>                    finish_episode(model)
+</span></span><span style="display:flex;"><span>                    numsteps<span style="color:#ff79c6">.</span>append(steps)
+</span></span><span style="display:flex;"><span>                    avg_numsteps<span style="color:#ff79c6">.</span>append(np<span style="color:#ff79c6">.</span>mean(numsteps[<span style="color:#ff79c6">-</span><span style="color:#bd93f9">50</span>:]))
+</span></span><span style="display:flex;"><span>                    <span style="color:#ff79c6">break</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> (episode<span style="color:#ff79c6">+</span><span style="color:#bd93f9">1</span>) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">10</span> <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#39;Episode </span><span style="color:#f1fa8c">{}</span><span style="color:#f1fa8c">\t</span><span style="color:#f1fa8c">Current reward: </span><span style="color:#f1fa8c">{:.0f}</span><span style="color:#f1fa8c">\t</span><span style="color:#f1fa8c">Average reward: </span><span style="color:#f1fa8c">{:.2f}</span><span style="color:#f1fa8c">&#39;</span><span style="color:#ff79c6">.</span>format(
+</span></span><span style="display:flex;"><span>                      episode<span style="color:#ff79c6">+</span><span style="color:#bd93f9">1</span>, steps, avg_numsteps[<span style="color:#8be9fd;font-style:italic">len</span>(avg_numsteps)<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>]))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        avg_numsteps_run<span style="color:#ff79c6">.</span>append(avg_numsteps)
+</span></span><span style="display:flex;"><span>        env<span style="color:#ff79c6">.</span>close()
+</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#39;Run: &#39;</span>, run <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>, <span style="color:#f1fa8c">&#39; finished!&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    mean <span style="color:#ff79c6">=</span> np<span style="color:#ff79c6">.</span>asarray(avg_numsteps_run)<span style="color:#ff79c6">.</span>mean(axis<span style="color:#ff79c6">=</span><span style="color:#bd93f9">0</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>plot(<span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">1</span>, max_episodes<span style="color:#ff79c6">+</span><span style="color:#bd93f9">1</span>), mean, label<span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;average of rolling means&#39;</span>, color<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;black&#39;</span>, ls<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;-&#39;</span>)
+</span></span><span style="display:flex;"><span>    sigma <span style="color:#ff79c6">=</span> np<span style="color:#ff79c6">.</span>asarray(avg_numsteps_run)<span style="color:#ff79c6">.</span>std(axis<span style="color:#ff79c6">=</span><span style="color:#bd93f9">0</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>fill_between(<span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">1</span>, max_episodes<span style="color:#ff79c6">+</span><span style="color:#bd93f9">1</span>), mean<span style="color:#ff79c6">+</span>sigma, mean<span style="color:#ff79c6">-</span>sigma, facecolor<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;wheat&#39;</span>, alpha<span style="color:#ff79c6">=</span><span style="color:#bd93f9">0.5</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>legend()
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>xlabel(<span style="color:#f1fa8c">&#39;Episode&#39;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>ylabel(<span style="color:#f1fa8c">&#39;Episode length&#39;</span>)  
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>show()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> mean
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> __name__ <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#39;__main__&#39;</span>:
+</span></span><span style="display:flex;"><span>    MaxValue <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">max</span>(main())
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">print</span>(MaxValue)
+</span></span></code></pre></div><p><strong>Deep Q-Learning with Experience Replay &amp; Target Network</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff79c6">import</span> gym
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> collections
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> random
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> pandas <span style="color:#ff79c6">as</span> pd
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> numpy <span style="color:#ff79c6">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> matplotlib <span style="color:#ff79c6">import</span> pyplot <span style="color:#ff79c6">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> torch.nn <span style="color:#ff79c6">as</span> nn
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> torch.nn.functional <span style="color:#ff79c6">as</span> F
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> torch.optim <span style="color:#ff79c6">as</span> optim
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Define a replay buffer to store and sample experience tuples (s, a, r, s&#39;, done_mask)</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">ReplayBuffer</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">def</span> __init__(self):
+</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>buffer <span style="color:#ff79c6">=</span> collections<span style="color:#ff79c6">.</span>deque(maxlen<span style="color:#ff79c6">=</span><span style="color:#bd93f9">50000</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">put</span>(self, transition):
+</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>buffer<span style="color:#ff79c6">.</span>append(transition)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">sample</span>(self, n):
+</span></span><span style="display:flex;"><span>        mini_batch <span style="color:#ff79c6">=</span> random<span style="color:#ff79c6">.</span>sample(self<span style="color:#ff79c6">.</span>buffer, n)
+</span></span><span style="display:flex;"><span>        s_lst, a_lst, r_prime_lst, s_prime_lst, done_mask_lst <span style="color:#ff79c6">=</span> [], [], [], [], []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">for</span> transition <span style="color:#ff79c6">in</span> mini_batch:
+</span></span><span style="display:flex;"><span>            s, a, r_prime, s_prime, done_mask <span style="color:#ff79c6">=</span> transition
+</span></span><span style="display:flex;"><span>            s_lst<span style="color:#ff79c6">.</span>append(s)
+</span></span><span style="display:flex;"><span>            a_lst<span style="color:#ff79c6">.</span>append([a])
+</span></span><span style="display:flex;"><span>            r_prime_lst<span style="color:#ff79c6">.</span>append([r_prime])
+</span></span><span style="display:flex;"><span>            s_prime_lst<span style="color:#ff79c6">.</span>append(s_prime)
+</span></span><span style="display:flex;"><span>            done_mask_lst<span style="color:#ff79c6">.</span>append([done_mask])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> torch<span style="color:#ff79c6">.</span>tensor(s_lst, dtype<span style="color:#ff79c6">=</span>torch<span style="color:#ff79c6">.</span>float), torch<span style="color:#ff79c6">.</span>tensor(a_lst), \
+</span></span><span style="display:flex;"><span>               torch<span style="color:#ff79c6">.</span>tensor(r_prime_lst), torch<span style="color:#ff79c6">.</span>tensor(s_prime_lst, dtype<span style="color:#ff79c6">=</span>torch<span style="color:#ff79c6">.</span>float), \
+</span></span><span style="display:flex;"><span>               torch<span style="color:#ff79c6">.</span>tensor(done_mask_lst)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">size</span>(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">len</span>(self<span style="color:#ff79c6">.</span>buffer)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Define the Q network using a simple feedforward neural network</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Qnet</span>(nn<span style="color:#ff79c6">.</span>Module):
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">def</span> __init__(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">super</span>(Qnet, self)<span style="color:#ff79c6">.</span>__init__()
+</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>fc1 <span style="color:#ff79c6">=</span> nn<span style="color:#ff79c6">.</span>Linear(<span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">128</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>fc2 <span style="color:#ff79c6">=</span> nn<span style="color:#ff79c6">.</span>Linear(<span style="color:#bd93f9">128</span>, <span style="color:#bd93f9">128</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#ff79c6">.</span>fc3 <span style="color:#ff79c6">=</span> nn<span style="color:#ff79c6">.</span>Linear(<span style="color:#bd93f9">128</span>, <span style="color:#bd93f9">2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">forward</span>(self, x):
+</span></span><span style="display:flex;"><span>        x <span style="color:#ff79c6">=</span> F<span style="color:#ff79c6">.</span>relu(self<span style="color:#ff79c6">.</span>fc1(x))
+</span></span><span style="display:flex;"><span>        x <span style="color:#ff79c6">=</span> F<span style="color:#ff79c6">.</span>relu(self<span style="color:#ff79c6">.</span>fc2(x))
+</span></span><span style="display:flex;"><span>        x <span style="color:#ff79c6">=</span> self<span style="color:#ff79c6">.</span>fc3(x)
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">return</span> x
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">sample_action</span>(self, obs, epsilon):
+</span></span><span style="display:flex;"><span>        out <span style="color:#ff79c6">=</span> self<span style="color:#ff79c6">.</span>forward(obs)
+</span></span><span style="display:flex;"><span>        coin <span style="color:#ff79c6">=</span> random<span style="color:#ff79c6">.</span>random()
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">if</span> coin <span style="color:#ff79c6">&lt;</span> epsilon:
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">return</span> random<span style="color:#ff79c6">.</span>randint(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">1</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">return</span> out<span style="color:#ff79c6">.</span>argmax()<span style="color:#ff79c6">.</span>item()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Training function for DQN with Experience Replay and Target Network</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">DQN_ER_TN_train</span>(q, q_target, memory, optimizer, gamma, batch_size):
+</span></span><span style="display:flex;"><span>    s, a, r, s_prime, done_mask <span style="color:#ff79c6">=</span> memory<span style="color:#ff79c6">.</span>sample(batch_size)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    q_out <span style="color:#ff79c6">=</span> q(s)
+</span></span><span style="display:flex;"><span>    q_a <span style="color:#ff79c6">=</span> q_out<span style="color:#ff79c6">.</span>gather(<span style="color:#bd93f9">1</span>, a)
+</span></span><span style="display:flex;"><span>    max_q_prime <span style="color:#ff79c6">=</span> q_target(s_prime)<span style="color:#ff79c6">.</span>max(<span style="color:#bd93f9">1</span>)[<span style="color:#bd93f9">0</span>]<span style="color:#ff79c6">.</span>unsqueeze(<span style="color:#bd93f9">1</span>)
+</span></span><span style="display:flex;"><span>    target <span style="color:#ff79c6">=</span> r <span style="color:#ff79c6">+</span> gamma <span style="color:#ff79c6">*</span> max_q_prime <span style="color:#ff79c6">*</span> done_mask
+</span></span><span style="display:flex;"><span>    loss <span style="color:#ff79c6">=</span> F<span style="color:#ff79c6">.</span>mse_loss(q_a, target)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    optimizer<span style="color:#ff79c6">.</span>zero_grad()
+</span></span><span style="display:flex;"><span>    loss<span style="color:#ff79c6">.</span>backward()
+</span></span><span style="display:flex;"><span>    optimizer<span style="color:#ff79c6">.</span>step()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># DQN with Experience Replay and Target Network training function</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">DQN_ER_TN</span>(numEpisodes, learning_rate, gamma, batch_size, C):
+</span></span><span style="display:flex;"><span>    env <span style="color:#ff79c6">=</span> gym<span style="color:#ff79c6">.</span>make(<span style="color:#f1fa8c">&#39;CartPole-v1&#39;</span>)
+</span></span><span style="display:flex;"><span>    q <span style="color:#ff79c6">=</span> Qnet()
+</span></span><span style="display:flex;"><span>    q_target <span style="color:#ff79c6">=</span> Qnet()
+</span></span><span style="display:flex;"><span>    q_target<span style="color:#ff79c6">.</span>load_state_dict(q<span style="color:#ff79c6">.</span>state_dict())
+</span></span><span style="display:flex;"><span>    memory <span style="color:#ff79c6">=</span> ReplayBuffer()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    optimizer <span style="color:#ff79c6">=</span> optim<span style="color:#ff79c6">.</span>Adam(q<span style="color:#ff79c6">.</span>parameters(), lr<span style="color:#ff79c6">=</span>learning_rate)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    totalSteps <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+</span></span><span style="display:flex;"><span>    totalStepsPerEpisode <span style="color:#ff79c6">=</span> []
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">for</span> n_epi <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(numEpisodes):
+</span></span><span style="display:flex;"><span>        epsilon <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">max</span>(<span style="color:#bd93f9">0.01</span>, <span style="color:#bd93f9">0.1</span> <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0.01</span> <span style="color:#ff79c6">*</span> (n_epi <span style="color:#ff79c6">/</span> <span style="color:#bd93f9">100</span>))
+</span></span><span style="display:flex;"><span>        s <span style="color:#ff79c6">=</span> env<span style="color:#ff79c6">.</span>reset()
+</span></span><span style="display:flex;"><span>        done <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>
+</span></span><span style="display:flex;"><span>        score <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0.0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">for</span> t <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">500</span>):
+</span></span><span style="display:flex;"><span>            a <span style="color:#ff79c6">=</span> q<span style="color:#ff79c6">.</span>sample_action(torch<span style="color:#ff79c6">.</span>from_numpy(s)<span style="color:#ff79c6">.</span>float(), epsilon)
+</span></span><span style="display:flex;"><span>            s_prime, r_prime, done, info <span style="color:#ff79c6">=</span> env<span style="color:#ff79c6">.</span>step(a)
+</span></span><span style="display:flex;"><span>            totalSteps <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">1</span>
+</span></span><span style="display:flex;"><span>            done_mask <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0.0</span> <span style="color:#ff79c6">if</span> done <span style="color:#ff79c6">else</span> <span style="color:#bd93f9">1.0</span>
+</span></span><span style="display:flex;"><span>            memory<span style="color:#ff79c6">.</span>put((s, a, r_prime, s_prime, done_mask))
+</span></span><span style="display:flex;"><span>            s <span style="color:#ff79c6">=</span> s_prime
+</span></span><span style="display:flex;"><span>            score <span style="color:#ff79c6">+=</span> r_prime
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> memory<span style="color:#ff79c6">.</span>size() <span style="color:#ff79c6">&gt;=</span> batch_size:
+</span></span><span style="display:flex;"><span>                DQN_ER_TN_train(q, q_target, memory, optimizer, gamma, batch_size)
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> totalSteps <span style="color:#ff79c6">%</span> C <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>:
+</span></span><span style="display:flex;"><span>                q_target<span style="color:#ff79c6">.</span>load_state_dict(q<span style="color:#ff79c6">.</span>state_dict())
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">if</span> done:
+</span></span><span style="display:flex;"><span>                <span style="color:#ff79c6">break</span>
+</span></span><span style="display:flex;"><span>        totalStepsPerEpisode<span style="color:#ff79c6">.</span>append(score)
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> totalStepsPerEpisode
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Plot function for standard deviation of episode lengths</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">plotStd</span>(method, episodes, numberOfRuns, title, <span style="color:#ff79c6">**</span>kwargs):
+</span></span><span style="display:flex;"><span>    stepCurves <span style="color:#ff79c6">=</span> []
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">for</span> t <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(numberOfRuns):
+</span></span><span style="display:flex;"><span>        stepCurves<span style="color:#ff79c6">.</span>append(method(numEpisodes<span style="color:#ff79c6">=</span>kwargs[<span style="color:#f1fa8c">&#39;numEpisodes&#39;</span>], learning_rate<span style="color:#ff79c6">=</span>kwargs[<span style="color:#f1fa8c">&#39;learning_rate&#39;</span>],
+</span></span><span style="display:flex;"><span>                                 gamma<span style="color:#ff79c6">=</span>kwargs[<span style="color:#f1fa8c">&#39;gamma&#39;</span>], batch_size<span style="color:#ff79c6">=</span>kwargs[<span style="color:#f1fa8c">&#39;batch_size&#39;</span>], C<span style="color:#ff79c6">=</span>kwargs[<span style="color:#f1fa8c">&#39;C&#39;</span>]))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    mean <span style="color:#ff79c6">=</span> np<span style="color:#ff79c6">.</span>asarray(stepCurves)<span style="color:#ff79c6">.</span>mean(axis<span style="color:#ff79c6">=</span><span style="color:#bd93f9">0</span>)
+</span></span><span style="display:flex;"><span>    std <span style="color:#ff79c6">=</span> np<span style="color:#ff79c6">.</span>asarray(stepCurves)<span style="color:#ff79c6">.</span>std(axis<span style="color:#ff79c6">=</span><span style="color:#bd93f9">0</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>plot(np<span style="color:#ff79c6">.</span>arange(<span style="color:#bd93f9">1</span>, episodes <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>), mean, color<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;black&#39;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>fill_between(np<span style="color:#ff79c6">.</span>arange(<span style="color:#bd93f9">1</span>, episodes <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>), mean <span style="color:#ff79c6">+</span> std, mean <span style="color:#ff79c6">-</span> std, facecolor<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;wheat&#39;</span>, alpha<span style="color:#ff79c6">=</span><span style="color:#bd93f9">0.5</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>xlabel(<span style="color:#f1fa8c">&#39;Episode&#39;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>ylabel(<span style="color:#f1fa8c">&#39;Episode length&#39;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>title(<span style="color:#f1fa8c">&#39;</span><span style="color:#f1fa8c">{}</span><span style="color:#f1fa8c">&#39;</span><span style="color:#ff79c6">.</span>format(title))
+</span></span><span style="display:flex;"><span>    plt<span style="color:#ff79c6">.</span>show()
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> mean, std
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Different learning rates for DQN with Experience Replay and Target Network</span>
+</span></span><span style="display:flex;"><span>learning_rates <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0.0001</span>, <span style="color:#bd93f9">0.0003</span>, <span style="color:#bd93f9">0.001</span>, <span style="color:#bd93f9">0.003</span>]
+</span></span><span style="display:flex;"><span>numEpisodes <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1000</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">for</span> lr <span style="color:#ff79c6">in</span> learning_rates:
+</span></span><span style="display:flex;"><span>    title <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;DQN Experience Replay + Target Network (learning rate = </span><span style="color:#f1fa8c">{}</span><span style="color:#f1fa8c">)&#39;</span><span style="color:#ff79c6">.</span>format(lr)
+</span></span><span style="display:flex;"><span>    plotStd(DQN_ER_TN, numEpisodes, <span style="color:#bd93f9">2</span>, title, numEpisodes<span style="color:#ff79c6">=</span>numEpisodes, learning_rate<span style="color:#ff79c6">=</span>lr, gamma<span style="color:#ff79c6">=</span><span style="color:#bd93f9">0.98</span>, batch_size<span style="color:#ff79c6">=</span><span style="color:#bd93f9">10</span>, C<span style="color:#ff79c6">=</span><span style="color:#bd93f9">20</span>)
+</span></span></code></pre></div>
+
+                
+
+                
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/2021_rnn_sentiment_classifier/" data-toggle="tooltip" data-placement="top" title="RNN Sentiment Classification: Movie Reviews">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/post/2021_factor_ml_forecasting/" data-toggle="tooltip" data-placement="top" title="PCA Machine Learning Hybrid Models: Real Estate Forecasting">Next
+                            Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+                
+
+                
+
+
+
+            </div>
+
+            
+            
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+            
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        <a href="/tags/a/b-testing" title="a/b-testing">
+                            a/b-testing
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/bayesian-statistics" title="bayesian-statistics">
+                            bayesian-statistics
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/causal-inference" title="causal-inference">
+                            causal-inference
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/classification" title="classification">
+                            classification
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/clustering" title="clustering">
+                            clustering
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/computer-science" title="computer-science">
+                            computer-science
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/data-science" title="data-science">
+                            data-science
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/deep-learning" title="deep-learning">
+                            deep-learning
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/dimension-reduction" title="dimension-reduction">
+                            dimension-reduction
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/econometrics" title="econometrics">
+                            econometrics
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/experimentation" title="experimentation">
+                            experimentation
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/forecasting" title="forecasting">
+                            forecasting
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/industry" title="industry">
+                            industry
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/machine-learning" title="machine-learning">
+                            machine-learning
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/nlp" title="nlp">
+                            nlp
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/panel-data" title="panel-data">
+                            panel-data
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/pytorch" title="pytorch">
+                            pytorch
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/regression" title="regression">
+                            regression
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/reinforcement-learning" title="reinforcement-learning">
+                            reinforcement-learning
+                        </a>
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">                  
+                    
+                    <li>
+                        <a href="mailto:richie.lee@live.nl">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		           
+                    
+                    
+                    
+                    
+
+		            
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/Richie-Lee">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		            
+                    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/leerichie/">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		           
+                    
+                    
+                    
+                    
+                    
+                    
+            
+            
+            <li>
+                <a target="_blank" href="https://www.instagram.com/richie_lee_/">
+                    <span class="fa-stack fa-lg">
+                        <i class="fas fa-circle fa-stack-2x"></i>
+                        <i class="fab fa-instagram fa-stack-1x fa-inverse"></i>
+                    </span>
+                </a>
+            </li>
+            
+            
+           
+             </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Richie Lee 2023
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function loadAsync(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        loadAsync("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    loadAsync("https://cdn.jsdelivr.net/npm/fastclick@1.0.6/lib/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+
+
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        
+        
+        
+        
+            _containerSelector = 'div.post-container'
+        
+
+        
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        
+        $(selector).html('')
+
+        
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    
+
+
+    loadAsync("\/js\/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+
+
+
+</body>
+</html>
