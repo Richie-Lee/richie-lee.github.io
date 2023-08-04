@@ -28,13 +28,13 @@ The positive reception of the findings and methodologies led to an invitation to
     </item>
     
     <item>
-      <title>Scalable Duplicate Detection &amp; Text Analysis: Ecommerce Products</title>
-      <link>/post/2021_lsh_duplicate_detection/</link>
-      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
+      <title>Uplift Modelling: Personalising Discount Campaigns</title>
+      <link>/post/2021_uplift/</link>
+      <pubDate>Tue, 01 Feb 2022 00:00:00 +0000</pubDate>
       
-      <guid>/post/2021_lsh_duplicate_detection/</guid>
-      <description>TL:DR This article explore the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques.
-The overall approach is summarised in the following diagram: Context With the ever increasing relevance of online shopping and customers are becoming more comfortable with online platforms with user experience therefore playing a crucial role in driving sales and preventing churn.</description>
+      <guid>/post/2021_uplift/</guid>
+      <description>TL:DR This post cover an application of Uplift modelling, a methodology that leverages causal inference insights alongside personalisation techniques (XGBoost) to optimise ROI on, in this case, an A/B/n tested marketing campaign. The experiment results can be used to identify target audience to maximise positive conversion and to minimise corresponding costs and campaign-caused churns.
+Context When considering targeted campaigns one of the most important questions to ask is, Who is our intended audience?</description>
     </item>
     
     <item>
@@ -48,7 +48,7 @@ The methods considered follow Kim &amp;amp; Swanson (2018) hybrid model design, 
     </item>
     
     <item>
-      <title>Deep Reinforcement Learning - Game Automation</title>
+      <title>Deep Reinforcement Learning: Game Automation</title>
       <link>/post/2021_reinforcement/</link>
       <pubDate>Sat, 01 May 2021 00:00:00 +0000</pubDate>
       
@@ -64,6 +64,16 @@ Introduction: Reinforcement Learning (RL) Reinforcement learning (RL) is a machi
       
       <guid>/post/2021_rnn_sentiment_classifier/</guid>
       <description>TL:DR The objective is to accurately identify whether a movie was positively or negatively received through text reviews from IMDb. This is a common NLP challenge that is known as Sentiment Classification. The proposed algorithm is a Recurrent Neural Network (RNN). Especially the ability to capture complex relations and sequential dependencies in text data is what becomes valuable here. In this brief post, a well-known RNN implementation, a LSTM, is benchmarked against other deep learning implementations and checked for robustness.</description>
+    </item>
+    
+    <item>
+      <title>Scalable Duplicate Detection &amp; Text Analysis: Ecommerce Products</title>
+      <link>/post/2021_lsh_duplicate_detection/</link>
+      <pubDate>Mon, 01 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2021_lsh_duplicate_detection/</guid>
+      <description>TL:DR This article explore the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques.
+The overall approach is summarised in the following diagram: Context With the ever increasing relevance of online shopping and customers are becoming more comfortable with online platforms with user experience therefore playing a crucial role in driving sales and preventing churn.</description>
     </item>
     
     <item>
