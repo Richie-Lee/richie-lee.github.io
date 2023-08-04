@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Richie Lee">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="/img/2021_Uplift/Wallpaper.jpg">
+    <meta property="twitter:image" content="/img/2021_Uplift/Wallpaper.jpg" />
+    
+
+    
+    <meta name="title" content="Uplift Modelling: Personalising Discount Campaigns" />
+    <meta property="og:title" content="Uplift Modelling: Personalising Discount Campaigns" />
+    <meta property="twitter:title" content="Uplift Modelling: Personalising Discount Campaigns" />
+    
+
+    
+    <meta name="description" content="This post applies Uplift modelling in Python, using causal inference and personalization (XGBoost), to optimize ROI for an A/B/n tested marketing campaign. The results identify the target audience for maximum positive conversions while minimizing costs and campaign-caused churn. ">
+    <meta property="og:description" content="This post applies Uplift modelling in Python, using causal inference and personalization (XGBoost), to optimize ROI for an A/B/n tested marketing campaign. The results identify the target audience for maximum positive conversions while minimizing costs and campaign-caused churn. " />
+    <meta property="twitter:description" content="This post applies Uplift modelling in Python, using causal inference and personalization (XGBoost), to optimize ROI for an A/B/n tested marketing campaign. The results identify the target audience for maximum positive conversions while minimizing costs and campaign-caused churn. " />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="Microservice, Deep Learning">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Uplift Modelling: Personalising Discount Campaigns | Personal Webpage</title>
+
+    <link rel="canonical" href="/post/2021_uplift/">
+
+    
+    
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link rel="stylesheet" href="/css/font-awesome.all.min.css">
+
+    
+    
+
+    
+    <script src="/js/jquery.min.js"></script>
+
+    
+    <script src="/js/bootstrap.min.js"></script>
+
+    
+    <script src="/js/hux-blog.min.js"></script>
+
+    
+    <script src="/js/lazysizes.min.js"></script>
+
+    
+    
+
+</head>
+
+
+
+
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Richie Lee</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">All Posts</a>
+                    </li>
+                    
+                        
+                        <li>
+                            <a href="/categories/projects/">projects</a>
+                        </li>
+                        
+                    
+                    
+		    
+                        <li><a href="/about//">ABOUT</a></li>
+                    
+		            <li>
+                        <a href="/search"><i class="fa fa-search"></i></a>
+		           </li>
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('/img/2021_Uplift/Wallpaper.jpg')
+    }
+</style>
+
+<header class="intro-header" >
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/a/b-testing" title="A/B Testing">
+                            A/B Testing
+                        </a>
+                        
+                        <a class="tag" href="/tags/causal-inference" title="Causal Inference">
+                            Causal Inference
+                        </a>
+                        
+                        <a class="tag" href="/tags/data-science" title="Data Science">
+                            Data Science
+                        </a>
+                        
+                        <a class="tag" href="/tags/experimentation" title="Experimentation">
+                            Experimentation
+                        </a>
+                        
+                        <a class="tag" href="/tags/forecasting" title="Forecasting">
+                            Forecasting
+                        </a>
+                        
+                        <a class="tag" href="/tags/machine-learning" title="Machine Learning">
+                            Machine Learning
+                        </a>
+                        
+                        <a class="tag" href="/tags/uplift" title="Uplift">
+                            Uplift
+                        </a>
+                        
+                    </div>
+                    <h1>Uplift Modelling: Personalising Discount Campaigns</h1>
+                    <h2 class="subheading">Combining Causal Inference &amp; Personalisation (Machine Learning) to identify optimal target audiences using A/B/n experiment data</h2>
+                    <span class="meta">
+                        
+                            Posted by 
+                            
+                                Richie
+                             
+                            on 
+                            Tuesday, February 1, 2022
+                            
+                            
+                            
+                            
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <h2 id="tldr">TL:DR</h2>
+<p><em>This post cover an application of Uplift modelling, a methodology that leverages causal inference insights alongside personalisation techniques (XGBoost) to optimise ROI on, in this case, an A/B/n tested marketing campaign. The experiment results can be used to identify target audience to maximise positive conversion and to minimise corresponding costs and campaign-caused churns.</em></p>
+<h2 id="context">Context</h2>
+<p>When considering targeted campaigns one of the most important questions to ask is, <strong>Who is our intended audience?</strong>. In the context of this post, we seek to boost revenue by increasing sales volumes through a discount campaign, we can envision our target group in the following manner:</p>
+<p>
+  <img src="/img/2021_Uplift/shiba.jpg" alt="">
+
+</p>
+<p>To optimize the return on investment (<strong>ROI</strong>) of our campaigns, our ideal focus should be on the &ldquo;<strong>Persuadables</strong>&rdquo;. These are individuals who, without the campaign, would not have made a purchase but are influenced to do so because of the campaign. Engaging with other consumers, on the other hand, may, at best, lead to wasted campaign costs and, at worst, result in potential customers <strong>churning</strong> due to negative experiences with the campaign. The latter group is often referred to as &ldquo;<strong>Sleeping dogs</strong>&rdquo;.</p>
+<p>This is where Uplift modelling becomes valuable. By utilizing customer characteristics, this method helps identify which consumers belong to each category, enabling us to design more profitable targeted campaigns that effectively reach the persuadable audience and avoid unnecessary interactions with the non-responsive segment. In contrast to typical A/B tests, where we measure population-wide campaign impact through the <strong>average treatment effect (ATE)</strong>, we now go a step further by revealing individual-level insights known as <strong>conditional average treatment effects (CATE)</strong>.</p>
+<h2 id="data">Data</h2>
+<p>The data comes from an <strong>A/B/n test</strong> with a sample size of 64000, distributed over one control group and two different treatment groups.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>no visit</th>
+<th>visit</th>
+<th>All</th>
+<th>%</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No Offer</td>
+<td>19044</td>
+<td>2262</td>
+<td>21306</td>
+<td>0.106</td>
+</tr>
+<tr>
+<td>Buy One Get One</td>
+<td>18149</td>
+<td>3238</td>
+<td>21387</td>
+<td>0.151</td>
+</tr>
+<tr>
+<td>Discount</td>
+<td>17413</td>
+<td>3894</td>
+<td>21307</td>
+<td>0.183</td>
+</tr>
+<tr>
+<td>All</td>
+<td>54606</td>
+<td>9394</td>
+<td>64000</td>
+<td>0.147</td>
+</tr>
+</tbody>
+</table>
+<p>Per observation, there are also a individual characteristics available which will become useful in the personalisation steps.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>recency</th>
+<th>history</th>
+<th>used_discount</th>
+<th>used_b1g1</th>
+<th>zip_code</th>
+<th>is_referral</th>
+<th>channel</th>
+<th>offer</th>
+<th>conversion</th>
+<th>visit</th>
+<th>spend</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>10</td>
+<td>142.44</td>
+<td>1</td>
+<td>0</td>
+<td>Surburban</td>
+<td>0</td>
+<td>Phone</td>
+<td>B1G1</td>
+<td>0</td>
+<td>0</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>6</td>
+<td>329.08</td>
+<td>1</td>
+<td>1</td>
+<td>Rural</td>
+<td>1</td>
+<td>Web</td>
+<td>No Offer</td>
+<td>0</td>
+<td>0</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>2</td>
+<td>7</td>
+<td>180.65</td>
+<td>0</td>
+<td>1</td>
+<td>Surburban</td>
+<td>1</td>
+<td>Web</td>
+<td>B1G1</td>
+<td>0</td>
+<td>0</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>3</td>
+<td>9</td>
+<td>675.83</td>
+<td>1</td>
+<td>0</td>
+<td>Rural</td>
+<td>1</td>
+<td>Web</td>
+<td>Discount</td>
+<td>0</td>
+<td>0</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2</td>
+<td>45.34</td>
+<td>1</td>
+<td>0</td>
+<td>Urban</td>
+<td>0</td>
+<td>Web</td>
+<td>B1G1</td>
+<td>0</td>
+<td>0</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+<p>To conclude exploratory analysis, we can compare treatments groups with the control, which highlight a 7.66% <strong>conversion rate lift</strong> for discount and 4.52% for B1G1. Multiplying these with the average order value yields a <strong>revenue lift</strong> of approx. 40.800 and  24.100 euros for the discount and B1G1 campaigns respectively.</p>
+<h2 id="methodology">Methodology</h2>
+<p>To predict uplift at the individual level, we build multiple models (one for each group). In this case, <strong>XGBoost</strong> is used, a popular tree-based machine learning algorithm. This model doesn&rsquo;t handle categorical data, but that&rsquo;s no problem as we can easily solve it using <strong>target encoding</strong> (replacing a categorical value with the mean of the target variable).</p>
+<p>The goal is to forecast whether the customer ended up visiting (binary prediction), which we can do as follows (some code omitted for brevity or because the steps are considered trivial):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff79c6">from</span> sklearn.model_selection <span style="color:#ff79c6">import</span> train_test_split
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> sklearn.metrics <span style="color:#ff79c6">import</span> confusion_matrix, classification_report
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> xgboost <span style="color:#ff79c6">as</span> xgb
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Target Encoding</span>
+</span></span><span style="display:flex;"><span>columns_cat <span style="color:#ff79c6">=</span> [<span style="color:#f1fa8c">&#39;zip_code&#39;</span>, <span style="color:#f1fa8c">&#39;channel&#39;</span>]
+</span></span><span style="display:flex;"><span>target <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;visit&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">for</span> column <span style="color:#ff79c6">in</span> columns_cat:
+</span></span><span style="display:flex;"><span>    target_mean <span style="color:#ff79c6">=</span> df_num<span style="color:#ff79c6">.</span>groupby(column)[target]<span style="color:#ff79c6">.</span>mean()
+</span></span><span style="display:flex;"><span>    df[column] <span style="color:#ff79c6">=</span> df[column]<span style="color:#ff79c6">.</span>map(target_mean)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Define X and y</span>
+</span></span><span style="display:flex;"><span>X_variables <span style="color:#ff79c6">=</span> [<span style="color:#f1fa8c">&#39;history&#39;</span>, <span style="color:#f1fa8c">&#39;used_discount&#39;</span>, <span style="color:#f1fa8c">&#39;used_bogo&#39;</span>, <span style="color:#f1fa8c">&#39;zip_code&#39;</span>, <span style="color:#f1fa8c">&#39;is_referral&#39;</span>, <span style="color:#f1fa8c">&#39;channel&#39;</span>]
+</span></span><span style="display:flex;"><span>y_variable <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;visit&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Define dictionary to save result</span>
+</span></span><span style="display:flex;"><span>XGB_trained_models <span style="color:#ff79c6">=</span> {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">for</span> group <span style="color:#ff79c6">in</span> [<span style="color:#f1fa8c">&#39;No Offer&#39;</span>, <span style="color:#f1fa8c">&#39;Discount&#39;</span>]:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Select data for the current group</span>
+</span></span><span style="display:flex;"><span>    df_group <span style="color:#ff79c6">=</span> df_num[df_num[<span style="color:#f1fa8c">&#39;offer&#39;</span>] <span style="color:#ff79c6">==</span> group]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Split train &amp; test set</span>
+</span></span><span style="display:flex;"><span>    seed <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+</span></span><span style="display:flex;"><span>    train_df, test_df <span style="color:#ff79c6">=</span> train_test_split(df_group, test_size<span style="color:#ff79c6">=</span><span style="color:#bd93f9">0.2</span>, random_state<span style="color:#ff79c6">=</span>seed)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Select X and Y</span>
+</span></span><span style="display:flex;"><span>    X_train <span style="color:#ff79c6">=</span> train_df[X_variables]
+</span></span><span style="display:flex;"><span>    y_train <span style="color:#ff79c6">=</span> train_df[y_variable]
+</span></span><span style="display:flex;"><span>    X_test <span style="color:#ff79c6">=</span> test_df[X_variables]
+</span></span><span style="display:flex;"><span>    y_test <span style="color:#ff79c6">=</span> test_df[y_variable]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">    Training
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">    &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    params <span style="color:#ff79c6">=</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#39;n_estimators&#39;</span>: <span style="color:#bd93f9">100</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#39;max_depth&#39;</span>: <span style="color:#bd93f9">5</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#39;learning_rate&#39;</span>: <span style="color:#bd93f9">1</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#39;min_child_weight&#39;</span>: <span style="color:#bd93f9">10</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#39;subsample&#39;</span>: <span style="color:#bd93f9">1</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f1fa8c">&#39;silent&#39;</span>: <span style="color:#bd93f9">1</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    XGB <span style="color:#ff79c6">=</span> xgb<span style="color:#ff79c6">.</span>XGBClassifier(<span style="color:#ff79c6">**</span>params)
+</span></span><span style="display:flex;"><span>    XGB<span style="color:#ff79c6">.</span>fit(X_train, y_train)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">    Evaluate model
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">    &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Create predictions for the test set</span>
+</span></span><span style="display:flex;"><span>    preds_proba <span style="color:#ff79c6">=</span> XGB<span style="color:#ff79c6">.</span>predict_proba(X_test)
+</span></span><span style="display:flex;"><span>    preds <span style="color:#ff79c6">=</span> XGB<span style="color:#ff79c6">.</span>predict(X_test)   <span style="color:#6272a4"># Cut-off point equals 0.5</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Confusion matrix</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#39;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#39;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">print</span>(confusion_matrix(y_test, preds))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Classification report</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#39;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#39;</span> <span style="color:#ff79c6">+</span> classification_report(y_test, preds))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Train model on the full data set &amp; save    </span>
+</span></span><span style="display:flex;"><span>    XGB<span style="color:#ff79c6">.</span>fit(df_group[X_variables], df_group[y_variable])  <span style="color:#6272a4"># Fit the model over the train set</span>
+</span></span><span style="display:flex;"><span>    XGB_trained_models[group] <span style="color:#ff79c6">=</span> XGB
+</span></span></code></pre></div><p>This yields a set of predictions for conversion, conditional on the treatment status (no offer, discount, B1G1). Then we can start extracting uplift estimations on the individual level to eventually use this information to identify optimal target audiences.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">Uplift = Conversion rate (treatment) - Conversion rate (no treatment)
+</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Predict probability with or without treatment</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">for</span> group <span style="color:#ff79c6">in</span> groups:
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Give prediction for with and without treatment</span>
+</span></span><span style="display:flex;"><span>    preds_proba <span style="color:#ff79c6">=</span> XGB_trained_models[group]<span style="color:#ff79c6">.</span>predict_proba(df_num<span style="color:#ff79c6">.</span>loc[:, X_variables])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Extract the conversion probability</span>
+</span></span><span style="display:flex;"><span>    preds_av <span style="color:#ff79c6">=</span> preds_proba[:, <span style="color:#bd93f9">1</span>]<span style="color:#ff79c6">.</span>mean()
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#39;Check - Average Conversion </span><span style="color:#f1fa8c">{</span>group<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">: </span><span style="color:#f1fa8c">{</span>np<span style="color:#ff79c6">.</span>round(preds_av <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">100</span>, <span style="color:#bd93f9">2</span>)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">%&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4"># Add result to the original data set</span>
+</span></span><span style="display:flex;"><span>    df[<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#39;Prob. </span><span style="color:#f1fa8c">{</span>group<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#39;</span>] <span style="color:#ff79c6">=</span> preds_proba[:, <span style="color:#bd93f9">1</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># Calculate uplift, CATE</span>
+</span></span><span style="display:flex;"><span>df[<span style="color:#f1fa8c">&#39;Uplift&#39;</span>] <span style="color:#ff79c6">=</span> df[<span style="color:#f1fa8c">&#39;Prob. &#39;</span> <span style="color:#ff79c6">+</span> groups[<span style="color:#bd93f9">1</span>]] <span style="color:#ff79c6">-</span> df[<span style="color:#f1fa8c">&#39;Prob. No Offer&#39;</span>]
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#39;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">Uplift range: </span><span style="color:#f1fa8c">{</span>np<span style="color:#ff79c6">.</span>round(df[<span style="color:#f1fa8c">&#34;Uplift&#34;</span>]<span style="color:#ff79c6">.</span>min() <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">100</span>, <span style="color:#bd93f9">2</span>)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> to </span><span style="color:#f1fa8c">{</span>np<span style="color:#ff79c6">.</span>round(df[<span style="color:#f1fa8c">&#34;Uplift&#34;</span>]<span style="color:#ff79c6">.</span>max() <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">100</span>, <span style="color:#bd93f9">2</span>)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">% points&#39;</span>)
+</span></span></code></pre></div><h2 id="results">Results</h2>
+<p>The model were developed and tuned using performance measured in terms of <strong>accuracy</strong>, <strong>Type-I</strong> &amp; <strong>Type-II</strong> errors and other summarising metrics such as <strong>precision</strong>, the accuracy rate out of positive predictions; <strong>recall</strong>, the ability to find positives when they are actually there; and <strong>f1-score</strong>, the harmonic mean of precision and recall.</p>
+<p>Using the XGBoost model, we can estimate probabilities of conversion for the different approaches (no campaign, discount, B1G1) and compute the corresponding uplift by simply subtracting the correct values from one another. This uplift can be considered the expected <strong>conditional average treatment effect (CATE)</strong>. In general, we expect a positive ROI for all consumers with an uplift &gt; 0, so in an ideal world we would target each one (in the hypothetical scenario of a perfectly accurate model).</p>
+<p>However, often in practice we are constraint and therefore we can optimise ROI by targeting the populations with the overall highest uplift. An intuitive way to display this more clearly is by <strong>ranking</strong> the customers, after which we have obtained the final uplift model insights that aid us in designing a more strongly data-driven campaign. The table below shows what this would look like for a <em>discount</em> campaign.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:right"></th>
+<th style="text-align:right">Prob. No Offer</th>
+<th style="text-align:right">Prob. Discount</th>
+<th style="text-align:right">Uplift</th>
+<th style="text-align:right">Uplift rank</th>
+<th style="text-align:right">recency</th>
+<th style="text-align:right">history</th>
+<th style="text-align:right">used_discount</th>
+<th style="text-align:right">used_bogo</th>
+<th>zip_code</th>
+<th>is_referral</th>
+<th>channel</th>
+<th>offer</th>
+<th style="text-align:right">conversion</th>
+<th style="text-align:right">visit</th>
+<th style="text-align:right">spend</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">82</td>
+<td style="text-align:right">0.051</td>
+<td style="text-align:right">0.557</td>
+<td style="text-align:right">0.506</td>
+<td style="text-align:right">322</td>
+<td style="text-align:right">5</td>
+<td style="text-align:right">494.26</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">1</td>
+<td>0.140</td>
+<td>1</td>
+<td>0.127</td>
+<td>Discount</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">0.0</td>
+</tr>
+<tr>
+<td style="text-align:right">151</td>
+<td style="text-align:right">0.098</td>
+<td style="text-align:right">0.590</td>
+<td style="text-align:right">0.492</td>
+<td style="text-align:right">410</td>
+<td style="text-align:right">7</td>
+<td style="text-align:right">229.53</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">0</td>
+<td>0.140</td>
+<td>0</td>
+<td>0.159</td>
+<td>Discount</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">0.0</td>
+</tr>
+<tr>
+<td style="text-align:right">189</td>
+<td style="text-align:right">0.092</td>
+<td style="text-align:right">0.665</td>
+<td style="text-align:right">0.573</td>
+<td style="text-align:right">150</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">720.17</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">1</td>
+<td>0.139</td>
+<td>1</td>
+<td>0.127</td>
+<td>Discount</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">0.0</td>
+</tr>
+<tr>
+<td style="text-align:right">235</td>
+<td style="text-align:right">0.200</td>
+<td style="text-align:right">0.642</td>
+<td style="text-align:right">0.442</td>
+<td style="text-align:right">690</td>
+<td style="text-align:right">4</td>
+<td style="text-align:right">225.89</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">1</td>
+<td>0.188</td>
+<td>1</td>
+<td>0.159</td>
+<td>Buy One Get One</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">0.0</td>
+</tr>
+<tr>
+<td style="text-align:right">242</td>
+<td style="text-align:right">0.088</td>
+<td style="text-align:right">0.729</td>
+<td style="text-align:right">0.641</td>
+<td style="text-align:right">55</td>
+<td style="text-align:right">9</td>
+<td style="text-align:right">201.75</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">1</td>
+<td>0.140</td>
+<td>0</td>
+<td>0.127</td>
+<td>Buy One Get One</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">0</td>
+<td style="text-align:right">0.0</td>
+</tr>
+</tbody>
+</table>
+<h2 id="concluding-remarks">Concluding remarks</h2>
+<p>In my opinion, Uplift modelling is a really cool intersection of personalisation and causal inference. Intuitively, I think most people would agree that in campaigns or even beyond, <em>knowing your audience</em> is vital, and with this Methodology I believe we can be much more confident that we actually succeed in this task - with actionable insights (e.g. consumer ranking) as a nice and useful bonus.</p>
+<p>I haven&rsquo;t gotten the opportunity to deploy these things in industry yet, but I&rsquo;m really hoping to get (or create) the opportunity to do so, as I can imagine it to be incredibly fulfilling when the conversion rate probabilities actually end up playing out well with tangible impact - so looking forward to that for sure! Thanks for reading</p>
+
+
+                
+
+                
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/2021_factor_ml_forecasting/" data-toggle="tooltip" data-placement="top" title="PCA Machine Learning Hybrid Models: Real Estate Forecasting">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/post/2022_heterogeneity_ah/" data-toggle="tooltip" data-placement="top" title="Econometric Panel Data Modelling: Albert Heijn (Ahold Delhaize)">Next
+                            Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+                
+
+                
+
+
+
+            </div>
+
+            
+            
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+            
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        <a href="/tags/a/b-testing" title="a/b-testing">
+                            a/b-testing
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/bayesian-statistics" title="bayesian-statistics">
+                            bayesian-statistics
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/causal-inference" title="causal-inference">
+                            causal-inference
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/classification" title="classification">
+                            classification
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/clustering" title="clustering">
+                            clustering
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/computer-science" title="computer-science">
+                            computer-science
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/data-science" title="data-science">
+                            data-science
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/deep-learning" title="deep-learning">
+                            deep-learning
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/dimension-reduction" title="dimension-reduction">
+                            dimension-reduction
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/econometrics" title="econometrics">
+                            econometrics
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/experimentation" title="experimentation">
+                            experimentation
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/forecasting" title="forecasting">
+                            forecasting
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/industry" title="industry">
+                            industry
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/machine-learning" title="machine-learning">
+                            machine-learning
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/nlp" title="nlp">
+                            nlp
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/panel-data" title="panel-data">
+                            panel-data
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/pytorch" title="pytorch">
+                            pytorch
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/regression" title="regression">
+                            regression
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/reinforcement-learning" title="reinforcement-learning">
+                            reinforcement-learning
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/uplift" title="uplift">
+                            uplift
+                        </a>
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">                  
+                    
+                    <li>
+                        <a href="mailto:richie.lee@live.nl">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		           
+                    
+                    
+                    
+                    
+
+		            
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/Richie-Lee">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		            
+                    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/leerichie/">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		           
+                    
+                    
+                    
+                    
+                    
+                    
+            
+            
+            <li>
+                <a target="_blank" href="https://www.instagram.com/richie_lee_/">
+                    <span class="fa-stack fa-lg">
+                        <i class="fas fa-circle fa-stack-2x"></i>
+                        <i class="fab fa-instagram fa-stack-1x fa-inverse"></i>
+                    </span>
+                </a>
+            </li>
+            
+            
+           
+             </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Richie Lee 2023
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function loadAsync(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        loadAsync("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    loadAsync("https://cdn.jsdelivr.net/npm/fastclick@1.0.6/lib/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+
+
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        
+        
+        
+        
+            _containerSelector = 'div.post-container'
+        
+
+        
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        
+        $(selector).html('')
+
+        
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    
+
+
+    loadAsync("\/js\/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+
+
+
+</body>
+</html>
