@@ -27,5 +27,15 @@ Introduction A/B testing has become a cornerstone in the digital age for identif
 The positive reception of the findings and methodologies led to an invitation to present the results at Albert Heijn&amp;rsquo;s Data Science department&amp;rsquo;s Knowledge Exchange initiative. The main contribution of the study is the proof-of-concept and simplifiction of micro-econometric methods for these specific use-cases.</description>
     </item>
     
+    <item>
+      <title>Uplift Modelling: Personalising Discount Campaigns</title>
+      <link>/post/2021_uplift/</link>
+      <pubDate>Tue, 01 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2021_uplift/</guid>
+      <description>TL:DR This post cover an application of Uplift modelling, a methodology that leverages causal inference insights alongside personalisation techniques (XGBoost) to optimise ROI on, in this case, an A/B/n tested marketing campaign. The experiment results can be used to identify target audience to maximise positive conversion and to minimise corresponding costs and campaign-caused churns.
+Context When considering targeted campaigns one of the most important questions to ask is, Who is our intended audience?</description>
+    </item>
+    
   </channel>
 </rss>

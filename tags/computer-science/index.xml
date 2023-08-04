@@ -6,11 +6,11 @@
     <description>Recent content in Computer Science on Richie Lee</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 01 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/computer-science/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 01 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/computer-science/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Scalable Duplicate Detection &amp; Text Analysis: Ecommerce Products</title>
       <link>/post/2021_lsh_duplicate_detection/</link>
-      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 01 Feb 2021 00:00:00 +0000</pubDate>
       
       <guid>/post/2021_lsh_duplicate_detection/</guid>
       <description>TL:DR This article explore the development of a scalable product duplicate detection framework for E-commerce data. Our approach involves combining clustering (Locality-Sensitive Hashing - LSH) with classification, supported by thorough data preprocessing using text analysis and NLP techniques.

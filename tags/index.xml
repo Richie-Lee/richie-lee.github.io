@@ -107,38 +107,29 @@
     </item>
     
     <item>
-      <title>Computer Science</title>
-      <link>/tags/computer-science/</link>
-      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
+      <title>Machine Learning</title>
+      <link>/tags/machine-learning/</link>
+      <pubDate>Tue, 01 Feb 2022 00:00:00 +0000</pubDate>
       
-      <guid>/tags/computer-science/</guid>
+      <guid>/tags/machine-learning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Uplift</title>
+      <link>/tags/uplift/</link>
+      <pubDate>Tue, 01 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/uplift/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Dimension Reduction</title>
       <link>/tags/dimension-reduction/</link>
-      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/dimension-reduction/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>NLP</title>
-      <link>/tags/nlp/</link>
-      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/nlp/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Machine Learning</title>
-      <link>/tags/machine-learning/</link>
       <pubDate>Tue, 01 Jun 2021 00:00:00 +0000</pubDate>
       
-      <guid>/tags/machine-learning/</guid>
+      <guid>/tags/dimension-reduction/</guid>
       <description></description>
     </item>
     
@@ -166,6 +157,24 @@
       <pubDate>Sat, 01 May 2021 00:00:00 +0000</pubDate>
       
       <guid>/tags/reinforcement-learning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>NLP</title>
+      <link>/tags/nlp/</link>
+      <pubDate>Thu, 01 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/nlp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Computer Science</title>
+      <link>/tags/computer-science/</link>
+      <pubDate>Mon, 01 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/computer-science/</guid>
       <description></description>
     </item>
     
